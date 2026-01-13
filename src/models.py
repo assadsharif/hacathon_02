@@ -1,41 +1,25 @@
-"""Task data models.
+"""Task data models for 001-add-task feature.
 
-This module defines the core data structures for the Todo application,
-following the specification at /specs/phase1/features/add-task.md.
+This module defines the core Task dataclass following the specification
+at specs/001-add-task/spec.md and ADR-0001 (union type syntax).
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 
 @dataclass
 class Task:
-    """Task data model.
-
-    Represents a todo task with all required fields as per AC4.
+    """Represents a task in the todo list.
 
     Attributes:
-        id: Unique task identifier (auto-assigned, starts from 1)
-        title: Task title (required, non-empty string)
-        description: Optional task description (can be None)
-        completed: Task completion status (default: False)
-        created_at: Timestamp when the task was created
+        id: Unique sequential identifier (assigned by storage layer)
+        title: Task title (required, non-empty after stripping whitespace)
+        description: Optional detailed description (can be None)
+        completed: Completion status (default: False)
+        created_at: Creation timestamp (system local time, timezone-naive)
     """
     id: int
     title: str
-    description: str | None = None
-    completed: bool = False
-    created_at: datetime = field(default_factory=datetime.now)
-
-    def to_dict(self) -> dict:
-        """Convert Task to dictionary representation.
-
-        Returns:
-            Dictionary with all task fields
-        """
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'completed': self.completed,
-            'created_at': self.created_at
-        }
+    description: str | None
+    completed: bool
+    created_at: datetime
