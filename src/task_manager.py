@@ -1,7 +1,10 @@
-"""Task management functions for 001-add-task feature.
+"""Task management functions for task management features.
 
-This module provides the add_task() function following the specification
-at specs/001-add-task/spec.md with FR-007 dual output (print + return).
+This module provides task management functions:
+- add_task(): Add new tasks (001-add-task)
+- delete_task(): Delete tasks by ID (003-delete-task)
+
+Functions follow dual output pattern (print + return) per specifications.
 """
 from datetime import datetime
 from typing import Any
@@ -81,3 +84,72 @@ def add_task(title: str, description: str | None = None) -> dict[str, Any]:
         'completed': task.completed,
         'created_at': task.created_at
     }
+
+
+def delete_task(task_id: int) -> dict[str, Any]:
+    """Delete a task by its ID, removing it permanently from storage.
+
+    Implements FR-001 through FR-010 from specs/003-delete-task/spec.md.
+    Provides dual output per FR-006:
+    - Prints confirmation message to stdout
+    - Returns dictionary with task details before deletion
+
+    Args:
+        task_id: The ID of the task to delete
+
+    Returns:
+        Dictionary containing all task fields before deletion:
+        {
+            'id': int,
+            'title': str,
+            'description': str | None,
+            'completed': bool,
+            'created_at': datetime
+        }
+
+    Raises:
+        ValueError: If task with given ID does not exist
+
+    Side Effects:
+        Removes task from storage permanently (no undo)
+        Prints confirmation message: "✓ Task #{id} deleted: {title}"
+
+    Examples:
+        >>> task = add_task("Task to delete")
+        ✓ Task #1 added: Task to delete
+        >>> deleted = delete_task(1)
+        ✓ Task #1 deleted: Task to delete
+        >>> print(deleted['title'])
+        'Task to delete'
+    """
+    # FR-002: Find task by ID (linear search through _tasks list)
+    task = None
+    for t in _tasks:
+        if t.id == task_id:
+            task = t
+            break
+
+    # FR-008: Handle task not found
+    if task is None:
+        # FR-007: Display error message to stdout
+        print(f"✗ Error: Task #{task_id} not found")
+        # FR-008: Raise ValueError
+        raise ValueError(f"Task #{task_id} not found")
+
+    # FR-004: Capture all task fields BEFORE deletion (for return value and audit trail)
+    deleted_data = {
+        'id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'completed': task.completed,
+        'created_at': task.created_at
+    }
+
+    # FR-003: Remove task from storage permanently
+    _tasks.remove(task)
+
+    # FR-006: Print confirmation message to stdout
+    print(f"✓ Task #{task.id} deleted: {task.title}")
+
+    # FR-005: Return captured task dictionary
+    return deleted_data
