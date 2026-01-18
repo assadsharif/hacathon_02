@@ -208,3 +208,13 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.13+ + Python standard library only (`dataclasses`, `datetime`) (001-add-task)
+- In-memory (Python list) - no persistence (001-add-task)
+- Python 3.13+ + Python standard library only (`dataclasses`, `datetime`) - inherited from 001-add-task (002-mark-complete)
+- In-memory (Python list) - reuses existing `_tasks` from 001-add-task (002-mark-complete)
+- Python 3.13+ + Python standard library only (dataclasses, datetime) (001-update-task)
+
+## Recent Changes
+- 001-add-task: Added Python 3.13+ + Python standard library only (`dataclasses`, `datetime`)

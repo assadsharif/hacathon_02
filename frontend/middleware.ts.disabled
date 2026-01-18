@@ -1,0 +1,89 @@
+/**
+ * Next.js Middleware for Protected Routes
+ * [Task]: AUTH-C6
+ * [From]: authentication.spec.md FR-AUTH-012 (Unauthenticated Access Prevention)
+ *
+ * This middleware runs on every request and redirects unauthenticated users
+ * to the sign-in page when they try to access protected routes.
+ *
+ * Protected routes:
+ * - / (home page - todo list)
+ * - Any other route except /sign-in and /sign-up
+ *
+ * Public routes:
+ * - /sign-in
+ * - /sign-up
+ * - /api/* (API routes)
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+
+/**
+ * Middleware function that checks authentication for protected routes.
+ *
+ * Flow:
+ * 1. Check if route is public (sign-in, sign-up, api)
+ * 2. If public, allow access
+ * 3. If protected, check for valid session
+ * 4. If no session, redirect to /sign-in
+ * 5. If session exists, allow access
+ */
+export async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+
+    // Public routes that don't require authentication
+    const publicRoutes = ['/sign-in', '/sign-up'];
+    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+    const isApiRoute = pathname.startsWith('/api');
+
+    // Allow access to public routes and API routes
+    if (isPublicRoute || isApiRoute) {
+        return NextResponse.next();
+    }
+
+    // For protected routes, check authentication
+    try {
+        const session = await auth.api.getSession({
+            headers: request.headers,
+        });
+
+        // If no session, redirect to sign-in
+        if (!session) {
+            const signInUrl = new URL('/sign-in', request.url);
+            // Add redirect parameter to return user after sign-in
+            signInUrl.searchParams.set('redirect', pathname);
+            return NextResponse.redirect(signInUrl);
+        }
+
+        // Session exists, allow access
+        return NextResponse.next();
+    } catch (error) {
+        // Error checking session, redirect to sign-in
+        console.error('Middleware auth error:', error);
+        const signInUrl = new URL('/sign-in', request.url);
+        signInUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(signInUrl);
+    }
+}
+
+/**
+ * Matcher configuration for middleware.
+ * Specifies which routes this middleware should run on.
+ *
+ * This runs on all routes except:
+ * - _next (Next.js internals)
+ * - Static files (images, fonts, etc.)
+ */
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - Public files (images, fonts, etc. in /public)
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    ],
+};
