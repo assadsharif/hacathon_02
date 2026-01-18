@@ -47,3 +47,14 @@ Thumbs.db
 
 # Python version
 .python-version
+
+# Pytest
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache/
+
+# Packaged skills
+*.skill
