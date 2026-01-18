@@ -258,3 +258,13 @@ python-dotenv==1.0.0
 | `references/crud-patterns.md` | Filtering, pagination, bulk operations |
 | `references/error-handling.md` | Exception handlers, custom errors |
 | `references/database-integration.md` | Transactions, migrations |
+| `references/anti-patterns.md` | Common mistakes and how to avoid them |
+| `references/troubleshooting.md` | Common FastAPI issues and solutions |
+| `../INTEGRATION.md` | How all 5 skills work together |
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/init_fastapi.py` | Initialize FastAPI project with best practices |
+| `scripts/run_dev.sh` | Run development server with auto-reload |

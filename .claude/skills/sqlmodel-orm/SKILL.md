@@ -260,3 +260,11 @@ class Todo(SQLModel, table=True):
 |------|--------------|
 | `references/relationships.md` | Many-to-many, cascade, lazy loading |
 | `references/query-optimization.md` | Joins, eager loading, N+1 prevention |
+| `references/troubleshooting.md` | Common SQLModel issues and solutions |
+| `../INTEGRATION.md` | How all 5 skills work together |
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/init_models.py` | Generate SQLModel table from schema |

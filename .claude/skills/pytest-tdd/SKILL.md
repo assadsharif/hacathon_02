@@ -238,6 +238,8 @@ WebFetch https://docs.pytest.org/en/stable/how-to/fixtures.html
 | `references/configuration.md` | pytest.ini, pyproject.toml, .coveragerc |
 | `references/test-organization.md` | Directory structure, naming, markers |
 | `references/anti-patterns.md` | Common mistakes and how to avoid them |
+| `references/troubleshooting.md` | Common pytest issues and solutions |
+| `../INTEGRATION.md` | How all 5 skills work together |
 
 ## Scripts
 

@@ -251,3 +251,11 @@ dev:    ep-dev-789012.us-east-2.aws.neon.tech
 | `references/connection-pooling.md` | Pool configuration, monitoring |
 | `references/troubleshooting.md` | Connection errors, debugging |
 | `references/branching.md` | Dev/staging/prod branch strategy |
+| `references/anti-patterns.md` | Common mistakes and how to avoid them |
+| `../INTEGRATION.md` | How all 5 skills work together |
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/check_connection.py` | Verify database connection and diagnose issues |

@@ -275,3 +275,12 @@ export interface Todo {
 |------|--------------|
 | `references/form-patterns.md` | useFormState, optimistic updates |
 | `references/api-integration.md` | FastAPI integration, error handling |
+| `references/anti-patterns.md` | Common mistakes and how to avoid them |
+| `references/troubleshooting.md` | Common Next.js issues and solutions |
+| `../INTEGRATION.md` | How all 5 skills work together |
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/init_nextjs.sh` | Initialize Next.js project with best practices |
