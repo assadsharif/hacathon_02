@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Define the architectural, technical, and governance principles for the Hackathon II project, which evolves a Phase I console Todo application into a Phase II full-stack web application while maintaining Phase I as the authoritative reference behavior.
+Define the architectural, technical, and governance principles for the Hackathon II project, which evolves a Phase I console Todo application into a Phase II full-stack web application, and Phase III AI-powered conversational interface, while maintaining Phase I as the authoritative reference behavior.
 
 ## Core Principles
 
-### I. Two-Phase Architecture (NON-NEGOTIABLE)
+### I. Three-Phase Architecture (NON-NEGOTIABLE)
 
 **Phase I: Console/In-Memory Foundation**
 - Python-based console application with in-memory storage
@@ -20,15 +20,26 @@ Define the architectural, technical, and governance principles for the Hackathon
 - Location: `specs/phase-ii/` and new implementation
 - Phase I directory MUST remain untouched during Phase II development
 
+**Phase III: AI-Powered Conversational Interface**
+- Natural language chat interface for todo management
+- Built on Phase II backend infrastructure (no changes to Phase II API)
+- Uses OpenAI Agents SDK for intelligent task interpretation
+- Uses MCP (Model Context Protocol) for tool integration
+- Location: `specs/phase-iii/` and frontend implementation
+- Phase II backend MUST remain unchanged during Phase III development
+
 **Authority Order:**
 1. Phase I Specifications (Highest Authority)
 2. This Constitution
-3. Phase II Specification (specify.md)
+3. Phase II Specification (spec.md)
 4. Phase II Plan (plan.md)
 5. Phase II Tasks (tasks.md)
-6. Phase II Implementation (Lowest Authority)
+6. Phase III Specification (spec.md)
+7. Phase III Plan (plan.md)
+8. Phase III Tasks (tasks.md)
+9. Implementation (Lowest Authority)
 
-**Rationale:** Phase I establishes the "source of truth" for domain behavior. Phase II must prove compatibility through validation against Phase I, not redefine it.
+**Rationale:** Phase I establishes the "source of truth" for domain behavior. Phase II extends it to web. Phase III adds AI capabilities without modifying the underlying domain logic.
 
 ### II. Technology Lock (NON-NEGOTIABLE)
 
@@ -44,6 +55,13 @@ Define the architectural, technical, and governance principles for the Hackathon
 - Database: Neon (PostgreSQL)
 - Auth: Better Auth with JWT (user-scoped data)
 - Deployment: Local-first, cloud-ready
+
+**Phase III Stack:**
+- UI: OpenAI ChatKit (React components)
+- Agent: OpenAI Agents SDK
+- Tools: MCP (Model Context Protocol)
+- Backend: Reuses Phase II FastAPI (no modifications)
+- Integration: JWT token passthrough for authenticated API calls
 
 **Rationale:** Technology decisions are frozen to prevent analysis paralysis. Focus is on execution, not exploration.
 
@@ -95,12 +113,18 @@ Define the architectural, technical, and governance principles for the Hackathon
 
 ### VI. Simplicity and Focus
 
-**Explicit Non-Goals:**
-- AI features
+**Explicit Non-Goals (Phase II):**
+- AI features (deferred to Phase III)
 - Real-time synchronization
 - Background jobs/workers
 - UI polish beyond functional MVP
 - OAuth/SSO providers (using Better Auth email/password only)
+
+**Phase III Approved Scope:**
+- AI-powered conversational interface (ChatKit UI)
+- Natural language todo management via OpenAI Agents SDK
+- MCP tool integration for backend operations
+- Chat interface only (does not modify Phase II API or database schema)
 
 **Constraints:**
 - Smallest viable change
@@ -108,7 +132,7 @@ Define the architectural, technical, and governance principles for the Hackathon
 - YAGNI: Don't build for hypothetical future requirements
 - One feature at a time
 
-**Rationale:** Hackathon constraints demand ruthless prioritization. Ship working software over perfect software.
+**Rationale:** Hackathon constraints demand ruthless prioritization. Ship working software over perfect software. Phase III AI features are additive and do not modify Phase II foundations.
 
 ### VII. Observability and Debuggability
 
@@ -254,7 +278,7 @@ After every significant user interaction:
 
 ---
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Ratified:** 2026-01-11
-**Last Amended:** 2026-01-12
-**Amendment:** Added Section VIII - Authentication and Security (Better Auth + JWT)
+**Last Amended:** 2026-01-20
+**Amendment:** Added Phase III (AI Conversational Interface) to Three-Phase Architecture - Sections I, II, VI updated
