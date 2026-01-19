@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signUp } from '@/lib/auth-client';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -19,14 +20,28 @@ export default function SignUpPage() {
         setIsLoading(true);
 
         try {
-            const result = await signUp.email({ email, password, name });
-            if (result.error) {
-                setError(result.error.message || 'Sign up failed. Please try again.');
+            const response = await fetch(`${API_URL}/api/auth/sign-up`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.detail || 'Sign up failed. Please try again.');
                 setIsLoading(false);
-            } else {
-                router.push('/');
-                router.refresh();
+                return;
             }
+
+            // Store the token in localStorage
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            router.push('/todos');
+            router.refresh();
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
             setIsLoading(false);

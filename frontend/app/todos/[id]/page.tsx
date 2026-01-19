@@ -8,12 +8,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSession } from '@/lib/auth-client';
 import { createAuthenticatedApi, Todo, TodoUpdate } from '@/lib/api';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export default function TodoDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [todo, setTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -26,20 +32,28 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
 
   const todoId = parseInt(params.id);
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    if (!isPending && !session) {
+    const storedToken = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('user');
+
+    if (!storedToken || !storedUser) {
       router.push('/sign-in');
+      return;
     }
-  }, [session, isPending, router]);
+
+    setToken(storedToken);
+    setUser(JSON.parse(storedUser));
+  }, [router]);
 
   useEffect(() => {
-    if (!session || isNaN(todoId)) return;
+    if (!token || isNaN(todoId)) return;
 
     const loadTodo = async () => {
       try {
         setIsLoading(true);
         setError('');
-        const api = createAuthenticatedApi(session.session?.token || null);
+        const api = createAuthenticatedApi(token);
         const data = await api.getTodo(todoId);
         setTodo(data);
         setTitle(data.title);
@@ -53,7 +67,7 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
     };
 
     loadTodo();
-  }, [session, todoId]);
+  }, [token, todoId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +75,7 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
     setIsSubmitting(true);
 
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       const updateData: TodoUpdate = {
         title,
         description: description || null,
@@ -80,7 +94,7 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
 
   const handleDelete = async () => {
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       await api.deleteTodo(todoId);
       router.push('/todos');
     } catch (err) {
@@ -93,7 +107,7 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
     if (!todo) return;
 
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       const newStatus = todo.status === 'active' ? 'completed' : 'active';
       const updated = await api.updateTodo(todoId, { status: newStatus });
       setTodo(updated);
@@ -118,7 +132,7 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
     </>
   );
 
-  if (isPending || !session) {
+  if (!user || !token) {
     return (
       <div style={{
         minHeight: '100vh',

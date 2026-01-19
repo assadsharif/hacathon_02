@@ -8,22 +8,36 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSession } from '@/lib/auth-client';
 import { createAuthenticatedApi, TodoCreate } from '@/lib/api';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export default function NewTodoPage() {
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    if (!isPending && !session) {
+    const storedToken = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('user');
+
+    if (!storedToken || !storedUser) {
       router.push('/sign-in');
+      return;
     }
-  }, [session, isPending, router]);
+
+    setToken(storedToken);
+    setUser(JSON.parse(storedUser));
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +45,7 @@ export default function NewTodoPage() {
     setIsSubmitting(true);
 
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       const todoData: TodoCreate = {
         title,
         description: description || null,
@@ -46,7 +60,7 @@ export default function NewTodoPage() {
     }
   };
 
-  if (isPending || !session) {
+  if (!user || !token) {
     return (
       <div style={{
         minHeight: '100vh',

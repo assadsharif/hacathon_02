@@ -8,12 +8,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession, signOut } from '@/lib/auth-client';
 import { createAuthenticatedApi, Todo } from '@/lib/api';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export default function TodosPage() {
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,20 +27,29 @@ export default function TodosPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    if (!isPending && !session) {
-      router.push('/sign-in');
-    }
-  }, [session, isPending, router]);
+    const storedToken = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('user');
 
+    if (!storedToken || !storedUser) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setToken(storedToken);
+    setUser(JSON.parse(storedUser));
+  }, [router]);
+
+  // Load todos when token is available
   useEffect(() => {
-    if (!session) return;
+    if (!token) return;
 
     const loadTodos = async () => {
       try {
         setIsLoading(true);
         setError('');
-        const api = createAuthenticatedApi(session.session?.token || null);
+        const api = createAuthenticatedApi(token);
         const statusFilter = filter === 'all' ? undefined : filter;
         const data = await api.listTodos(statusFilter);
         setTodos(data);
@@ -46,11 +61,11 @@ export default function TodosPage() {
     };
 
     loadTodos();
-  }, [session, filter]);
+  }, [token, filter]);
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       const newStatus = todo.status === 'active' ? 'completed' : 'active';
       await api.updateTodo(todo.id, { status: newStatus });
       setTodos(todos.map(t =>
@@ -65,7 +80,7 @@ export default function TodosPage() {
     if (!confirm('Are you sure you want to delete this todo?')) return;
 
     try {
-      const api = createAuthenticatedApi(session?.session?.token || null);
+      const api = createAuthenticatedApi(token);
       await api.deleteTodo(id);
       setTodos(todos.filter(t => t.id !== id));
     } catch (err) {
@@ -73,12 +88,13 @@ export default function TodosPage() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/');
+  const handleSignOut = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    router.push('/sign-in');
   };
 
-  if (isPending || !session) {
+  if (!user || !token) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -198,7 +214,7 @@ export default function TodosPage() {
                   color: '#1877f2'
                 }}
               >
-                {session.user?.name?.[0]?.toUpperCase() || 'U'}
+                {user?.name?.[0]?.toUpperCase() || 'U'}
               </button>
 
               {showUserMenu && (
@@ -218,10 +234,10 @@ export default function TodosPage() {
                     borderBottom: '1px solid #e4e6eb'
                   }}>
                     <p style={{ fontWeight: '600', color: '#1c1e21' }}>
-                      {session.user?.name || 'User'}
+                      {user?.name || 'User'}
                     </p>
                     <p style={{ fontSize: '13px', color: '#65676b' }}>
-                      {session.user?.email}
+                      {user?.email}
                     </p>
                   </div>
                   <button
