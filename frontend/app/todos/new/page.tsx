@@ -1,6 +1,6 @@
 /**
  * Create New Todo Page
- * Allows authenticated users to create a new todo
+ * Facebook-style design with inline styles
  */
 
 'use client';
@@ -16,11 +16,9 @@ export default function NewTodoPage() {
   const { data: session, isPending } = useSession();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<'active' | 'completed'>('active');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirect to sign-in if not authenticated
   useEffect(() => {
     if (!isPending && !session) {
       router.push('/sign-in');
@@ -37,7 +35,7 @@ export default function NewTodoPage() {
       const todoData: TodoCreate = {
         title,
         description: description || null,
-        status,
+        status: 'active',
       };
 
       await api.createTodo(todoData);
@@ -50,196 +48,280 @@ export default function NewTodoPage() {
 
   if (isPending || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#f0f2f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #e7f3ff',
+          borderTopColor: '#1877f2',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
-
-        .input-field-todo {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          border: 2px solid rgba(107, 70, 193, 0.15);
-          background: rgba(255, 255, 255, 0.9);
-        }
-
-        .input-field-todo:focus {
-          outline: none;
-          border-color: #7B68EE;
-          background: rgba(255, 255, 255, 1);
-          box-shadow:
-            0 0 0 4px rgba(123, 104, 238, 0.1),
-            0 4px 12px rgba(123, 104, 238, 0.15);
-          transform: translateY(-1px);
-        }
-
-        .btn-primary-todo {
-          background: linear-gradient(135deg, #7B68EE 0%, #C471ED 100%);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow:
-            0 4px 16px rgba(123, 104, 238, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-        }
-
-        .btn-primary-todo:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow:
-            0 8px 24px rgba(123, 104, 238, 0.4),
-            0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-        }
-
-        .btn-primary-todo:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-      `}</style>
-
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          {/* Back Button */}
-          <Link
-            href="/todos"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-purple-600 mb-6 transition-colors"
-            style={{ fontFamily: 'DM Sans, sans-serif' }}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to todos
+    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+      {/* Header */}
+      <header style={{
+        backgroundColor: '#1877f2',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{
+          maxWidth: '680px',
+          margin: '0 auto',
+          padding: '0 16px',
+          height: '56px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Link href="/todos" style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#ffffff',
+            textDecoration: 'none'
+          }}>
+            Todo App
           </Link>
+        </div>
+      </header>
 
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
+        {/* Back Link */}
+        <Link
+          href="/todos"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#1877f2',
+            textDecoration: 'none',
+            fontSize: '14px',
+            marginBottom: '24px'
+          }}
+        >
+          <span style={{ fontSize: '18px' }}>&larr;</span>
+          Back to todos
+        </Link>
+
+        {/* Form Card */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
+        }}>
+          {/* Card Header */}
+          <div style={{
+            padding: '20px 24px',
+            borderBottom: '1px solid #e4e6eb'
+          }}>
+            <h1 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#1c1e21',
+              margin: 0
+            }}>
               Create New Todo
             </h1>
-            <p className="text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+            <p style={{
+              fontSize: '14px',
+              color: '#65676b',
+              marginTop: '4px'
+            }}>
               Add a new task to your list
             </p>
           </div>
 
-          {/* Form Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Error Message */}
+          {/* Card Body */}
+          <div style={{ padding: '24px' }}>
+            <form onSubmit={handleSubmit}>
+              {/* Error */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-sm font-medium text-red-800" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                      {error}
-                    </p>
-                  </div>
+                <div style={{
+                  backgroundColor: '#ffebe8',
+                  border: '1px solid #dd3c10',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  marginBottom: '20px',
+                  color: '#dd3c10',
+                  fontSize: '14px'
+                }}>
+                  {error}
                 </div>
               )}
 
-              {/* Title Field */}
-              <div>
-                <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                  Title *
+              {/* Title */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  htmlFor="title"
+                  style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#1c1e21',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Title <span style={{ color: '#dd3c10' }}>*</span>
                 </label>
                 <input
                   id="title"
-                  name="title"
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="input-field-todo block w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400"
                   placeholder="What needs to be done?"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                  maxLength={200}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    fontSize: '16px',
+                    border: '1px solid #ccd0d5',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    backgroundColor: '#f5f6f7',
+                    color: '#1c1e21',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1877f2';
+                    e.target.style.backgroundColor = '#ffffff';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#ccd0d5';
+                    e.target.style.backgroundColor = '#f5f6f7';
+                  }}
                 />
-                <p className="mt-1 text-xs text-gray-500" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                  {title.length}/200 characters
-                </p>
               </div>
 
-              {/* Description Field */}
-              <div>
-                <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                  Description (optional)
+              {/* Description */}
+              <div style={{ marginBottom: '24px' }}>
+                <label
+                  htmlFor="description"
+                  style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#1c1e21',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Description <span style={{ color: '#65676b', fontWeight: 'normal' }}>(optional)</span>
                 </label>
                 <textarea
                   id="description"
-                  name="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="input-field-todo block w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 resize-none"
-                  placeholder="Add more details about this todo..."
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  placeholder="Add more details about this task..."
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    fontSize: '16px',
+                    border: '1px solid #ccd0d5',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    backgroundColor: '#f5f6f7',
+                    color: '#1c1e21',
+                    resize: 'vertical',
+                    minHeight: '100px',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1877f2';
+                    e.target.style.backgroundColor = '#ffffff';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#ccd0d5';
+                    e.target.style.backgroundColor = '#f5f6f7';
+                  }}
                 />
               </div>
 
-              {/* Status Field */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                  Status
-                </label>
-                <div className="flex gap-4">
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="status"
-                      value="active"
-                      checked={status === 'active'}
-                      onChange={() => setStatus('active')}
-                      className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                    />
-                    <span className="ml-2 text-gray-700" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                      Active
-                    </span>
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="status"
-                      value="completed"
-                      checked={status === 'completed'}
-                      onChange={() => setStatus('completed')}
-                      className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                    />
-                    <span className="ml-2 text-gray-700" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                      Completed
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4 pt-4">
+              {/* Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                paddingTop: '16px',
+                borderTop: '1px solid #e4e6eb'
+              }}>
                 <button
                   type="submit"
                   disabled={isSubmitting || !title.trim()}
-                  className="btn-primary-todo flex-1 py-3.5 px-6 rounded-xl text-white font-semibold"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    backgroundColor: isSubmitting || !title.trim() ? '#bec3c9' : '#1877f2',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: isSubmitting || !title.trim() ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   {isSubmitting ? 'Creating...' : 'Create Todo'}
                 </button>
                 <Link
                   href="/todos"
-                  className="flex-1 py-3.5 px-6 rounded-xl text-gray-700 font-semibold bg-gray-100 hover:bg-gray-200 transition-all text-center"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  style={{
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    backgroundColor: '#e4e6eb',
+                    color: '#1c1e21',
+                    border: 'none',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    textAlign: 'center'
+                  }}
                 >
                   Cancel
                 </Link>
               </div>
             </form>
           </div>
-
-          {/* Help Text */}
-          <div className="mt-6 text-center text-sm text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-            <p>Press Escape to cancel or use Ctrl+Enter to submit</p>
-          </div>
         </div>
-      </div>
-    </>
+
+        {/* Tips Card */}
+        <div style={{
+          marginTop: '24px',
+          backgroundColor: '#e7f3ff',
+          borderRadius: '8px',
+          padding: '16px 20px',
+          border: '1px solid #b3d4fc'
+        }}>
+          <h3 style={{
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#1877f2',
+            marginBottom: '8px'
+          }}>
+            Tips for effective todos
+          </h3>
+          <ul style={{
+            margin: 0,
+            paddingLeft: '20px',
+            color: '#1c1e21',
+            fontSize: '14px',
+            lineHeight: '1.6'
+          }}>
+            <li>Be specific about what needs to be done</li>
+            <li>Break large tasks into smaller ones</li>
+            <li>Add descriptions for complex tasks</li>
+          </ul>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -217,7 +217,7 @@ def test_delete_todo(todo_id: int):
 
     # Test case 3: Delete non-existent todo
     print("\n3. Trying to delete non-existent todo (ID 99999)...")
-    response = requests.delete(f"{API_URL}/99999}")
+    response = requests.delete(f"{API_URL}/99999")
     print_response(response)
 
     if response.status_code == 404:

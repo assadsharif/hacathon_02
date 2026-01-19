@@ -1,6 +1,6 @@
 /**
  * Todo List Page
- * Displays all todos for the authenticated user with filtering and CRUD operations
+ * Facebook-style design with inline styles
  */
 
 'use client';
@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from '@/lib/auth-client';
+import { useSession, signOut } from '@/lib/auth-client';
 import { createAuthenticatedApi, Todo } from '@/lib/api';
 
 export default function TodosPage() {
@@ -18,15 +18,15 @@ export default function TodosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // Redirect to sign-in if not authenticated
   useEffect(() => {
     if (!isPending && !session) {
       router.push('/sign-in');
     }
   }, [session, isPending, router]);
 
-  // Load todos
   useEffect(() => {
     if (!session) return;
 
@@ -53,8 +53,6 @@ export default function TodosPage() {
       const api = createAuthenticatedApi(session?.session?.token || null);
       const newStatus = todo.status === 'active' ? 'completed' : 'active';
       await api.updateTodo(todo.id, { status: newStatus });
-
-      // Update local state
       setTodos(todos.map(t =>
         t.id === todo.id ? { ...t, status: newStatus } : t
       ));
@@ -75,215 +73,450 @@ export default function TodosPage() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
+
   if (isPending || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#f0f2f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #e7f3ff',
+          borderTopColor: '#1877f2',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
+  const filteredTodos = todos
+    .filter(t => filter === 'all' || t.status === filter)
+    .filter(t =>
+      searchQuery === '' ||
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+  const activeTodos = todos.filter(t => t.status === 'active').length;
+  const completedTodos = todos.filter(t => t.status === 'completed').length;
+
   return (
-    <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
-      `}</style>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+      {/* Header */}
+      <header style={{
+        backgroundColor: '#1877f2',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
+      }}>
+        <div style={{
+          maxWidth: '960px',
+          margin: '0 auto',
+          padding: '0 16px',
+          height: '56px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Link href="/" style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#ffffff',
+            textDecoration: 'none'
+          }}>
+            Todo App
+          </Link>
 
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              My Todos
-            </h1>
-            <p className="text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-              Manage your tasks efficiently
-            </p>
+          {/* Search Bar */}
+          <div style={{
+            flex: 1,
+            maxWidth: '400px',
+            margin: '0 20px'
+          }}>
+            <input
+              type="text"
+              placeholder="Search todos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: 'none',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: '#ffffff',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
           </div>
 
-          {/* Actions Bar */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              {/* Filter Tabs */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFilter('all')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    filter === 'all'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  All ({todos.length})
-                </button>
-                <button
-                  onClick={() => setFilter('active')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    filter === 'active'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  Active
-                </button>
-                <button
-                  onClick={() => setFilter('completed')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    filter === 'completed'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  Completed
-                </button>
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link
+              href="/todos/new"
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#42b72a',
+                color: '#ffffff',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}
+            >
+              + New Todo
+            </Link>
 
-              {/* Create Button */}
-              <Link
-                href="/todos/new"
-                className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all inline-flex items-center gap-2"
-                style={{ fontFamily: 'DM Sans, sans-serif' }}
+            {/* User Menu */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  color: '#1877f2'
+                }}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                New Todo
-              </Link>
-            </div>
-          </div>
+                {session.user?.name?.[0]?.toUpperCase() || 'U'}
+              </button>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-              <p className="text-red-800 text-sm font-medium" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                {error}
-              </p>
-            </div>
-          )}
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
-              <p className="mt-4 text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                Loading todos...
-              </p>
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && todos.length === 0 && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                No todos yet
-              </h3>
-              <p className="text-gray-600 mb-6" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                Get started by creating your first todo!
-              </p>
-              <Link
-                href="/todos/new"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                style={{ fontFamily: 'DM Sans, sans-serif' }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Create Todo
-              </Link>
-            </div>
-          )}
-
-          {/* Todo List */}
-          {!isLoading && todos.length > 0 && (
-            <div className="space-y-3">
-              {todos.map((todo) => (
-                <div
-                  key={todo.id}
-                  className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all p-5 group"
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Checkbox */}
-                    <button
-                      onClick={() => toggleTodoStatus(todo)}
-                      className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 transition-all ${
-                        todo.status === 'completed'
-                          ? 'bg-gradient-to-br from-purple-500 to-pink-500 border-transparent'
-                          : 'border-gray-300 hover:border-purple-400'
-                      }`}
-                    >
-                      {todo.status === 'completed' && (
-                        <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <Link href={`/todos/${todo.id}`}>
-                        <h3
-                          className={`text-lg font-semibold mb-1 hover:text-purple-600 transition-colors ${
-                            todo.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'
-                          }`}
-                          style={{ fontFamily: 'Outfit, sans-serif' }}
-                        >
-                          {todo.title}
-                        </h3>
-                      </Link>
-                      {todo.description && (
-                        <p
-                          className={`text-sm mb-2 ${
-                            todo.status === 'completed' ? 'text-gray-400' : 'text-gray-600'
-                          }`}
-                          style={{ fontFamily: 'DM Sans, sans-serif' }}
-                        >
-                          {todo.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 text-xs text-gray-500" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                        <span>Created: {new Date(todo.created_at).toLocaleDateString()}</span>
-                        {todo.updated_at !== todo.created_at && (
-                          <span>Updated: {new Date(todo.updated_at).toLocaleDateString()}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Link
-                        href={`/todos/${todo.id}`}
-                        className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </Link>
-                      <button
-                        onClick={() => deleteTodo(todo.id)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
+              {showUserMenu && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
+                  minWidth: '200px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid #e4e6eb'
+                  }}>
+                    <p style={{ fontWeight: '600', color: '#1c1e21' }}>
+                      {session.user?.name || 'User'}
+                    </p>
+                    <p style={{ fontSize: '13px', color: '#65676b' }}>
+                      {session.user?.email}
+                    </p>
                   </div>
+                  <button
+                    onClick={handleSignOut}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      textAlign: 'left',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#1c1e21'
+                    }}
+                  >
+                    Sign Out
+                  </button>
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </>
+      </header>
+
+      <main style={{ maxWidth: '960px', margin: '0 auto', padding: '24px 16px' }}>
+        {/* Stats Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '16px',
+          marginBottom: '24px'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#1877f2' }}>
+              {todos.length}
+            </p>
+            <p style={{ fontSize: '14px', color: '#65676b' }}>Total Tasks</p>
+          </div>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#f5a623' }}>
+              {activeTodos}
+            </p>
+            <p style={{ fontSize: '14px', color: '#65676b' }}>Active</p>
+          </div>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#42b72a' }}>
+              {completedTodos}
+            </p>
+            <p style={{ fontSize: '14px', color: '#65676b' }}>Completed</p>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          padding: '4px',
+          marginBottom: '24px',
+          display: 'inline-flex',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+        }}>
+          {(['all', 'active', 'completed'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                backgroundColor: filter === f ? '#1877f2' : 'transparent',
+                color: filter === f ? '#ffffff' : '#65676b',
+                textTransform: 'capitalize',
+                transition: 'all 0.2s'
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div style={{
+            backgroundColor: '#ffebe8',
+            border: '1px solid #dd3c10',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginBottom: '24px',
+            color: '#dd3c10',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Loading */}
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '48px 0' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              border: '4px solid #e7f3ff',
+              borderTopColor: '#1877f2',
+              borderRadius: '50%',
+              margin: '0 auto',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <p style={{ marginTop: '16px', color: '#65676b' }}>Loading your todos...</p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredTodos.length === 0 && (
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '48px',
+            textAlign: 'center',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              backgroundColor: '#e7f3ff',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px',
+              fontSize: '32px'
+            }}>
+              {searchQuery ? '🔍' : '📝'}
+            </div>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+              {searchQuery ? 'No results found' : 'No todos yet'}
+            </h3>
+            <p style={{ color: '#65676b', marginBottom: '20px' }}>
+              {searchQuery
+                ? `No todos match "${searchQuery}"`
+                : filter === 'all'
+                  ? 'Create your first todo to get started!'
+                  : `No ${filter} todos.`
+              }
+            </p>
+            {!searchQuery && filter === 'all' && (
+              <Link
+                href="/todos/new"
+                style={{
+                  display: 'inline-block',
+                  padding: '12px 24px',
+                  backgroundColor: '#1877f2',
+                  color: '#ffffff',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontWeight: '600'
+                }}
+              >
+                Create Your First Todo
+              </Link>
+            )}
+          </div>
+        )}
+
+        {/* Todo List */}
+        {!isLoading && filteredTodos.length > 0 && (
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden'
+          }}>
+            {filteredTodos.map((todo, index) => (
+              <div
+                key={todo.id}
+                style={{
+                  padding: '16px 20px',
+                  borderBottom: index < filteredTodos.length - 1 ? '1px solid #e4e6eb' : 'none',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f8fa'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                {/* Checkbox */}
+                <button
+                  onClick={() => toggleTodoStatus(todo)}
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    border: todo.status === 'completed' ? 'none' : '2px solid #bec3c9',
+                    backgroundColor: todo.status === 'completed' ? '#42b72a' : 'transparent',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px'
+                  }}
+                >
+                  {todo.status === 'completed' && (
+                    <span style={{ color: '#ffffff', fontSize: '14px' }}>✓</span>
+                  )}
+                </button>
+
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Link href={`/todos/${todo.id}`} style={{ textDecoration: 'none' }}>
+                    <h3 style={{
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      color: todo.status === 'completed' ? '#bec3c9' : '#1c1e21',
+                      textDecoration: todo.status === 'completed' ? 'line-through' : 'none',
+                      marginBottom: '4px'
+                    }}>
+                      {todo.title}
+                    </h3>
+                  </Link>
+                  {todo.description && (
+                    <p style={{
+                      fontSize: '14px',
+                      color: todo.status === 'completed' ? '#bec3c9' : '#65676b',
+                      marginBottom: '8px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {todo.description}
+                    </p>
+                  )}
+                  <p style={{ fontSize: '12px', color: '#8a8d91' }}>
+                    {new Date(todo.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Link
+                    href={`/todos/${todo.id}`}
+                    style={{
+                      padding: '8px',
+                      borderRadius: '6px',
+                      backgroundColor: '#e7f3ff',
+                      color: '#1877f2',
+                      textDecoration: 'none',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => deleteTodo(todo.id)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      backgroundColor: '#ffebe8',
+                      color: '#dd3c10',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
   );
 }

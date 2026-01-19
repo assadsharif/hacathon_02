@@ -1,6 +1,6 @@
 /**
  * View/Edit Todo Page
- * Displays and allows editing of a single todo
+ * Facebook-style design with inline styles
  */
 
 'use client';
@@ -22,17 +22,16 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const todoId = parseInt(params.id);
 
-  // Redirect to sign-in if not authenticated
   useEffect(() => {
     if (!isPending && !session) {
       router.push('/sign-in');
     }
   }, [session, isPending, router]);
 
-  // Load todo
   useEffect(() => {
     if (!session || isNaN(todoId)) return;
 
@@ -80,14 +79,13 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this todo?')) return;
-
     try {
       const api = createAuthenticatedApi(session?.session?.token || null);
       await api.deleteTodo(todoId);
       router.push('/todos');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete todo');
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -105,24 +103,48 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
+  // Loading spinner component
+  const Spinner = () => (
+    <>
+      <div style={{
+        width: '40px',
+        height: '40px',
+        border: '4px solid #e7f3ff',
+        borderTopColor: '#1877f2',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </>
+  );
+
   if (isPending || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#f0f2f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Spinner />
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
-            <p className="mt-4 text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-              Loading todo...
-            </p>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+        <header style={{ backgroundColor: '#1877f2', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+          <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center' }}>
+            <Link href="/todos" style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffffff', textDecoration: 'none' }}>
+              Todo App
+            </Link>
           </div>
+        </header>
+        <div style={{ textAlign: 'center', padding: '80px 0' }}>
+          <div style={{ display: 'inline-block' }}><Spinner /></div>
+          <p style={{ marginTop: '16px', color: '#65676b' }}>Loading todo...</p>
         </div>
       </div>
     );
@@ -130,27 +152,55 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
 
   if (error && !todo) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
-            <svg className="w-12 h-12 text-red-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-xl font-bold text-red-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Failed to load todo
-            </h3>
-            <p className="text-red-700 mb-6" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-              {error}
-            </p>
-            <Link
-              href="/todos"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold"
-              style={{ fontFamily: 'DM Sans, sans-serif' }}
-            >
-              Back to todos
+      <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+        <header style={{ backgroundColor: '#1877f2', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+          <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center' }}>
+            <Link href="/todos" style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffffff', textDecoration: 'none' }}>
+              Todo App
             </Link>
           </div>
-        </div>
+        </header>
+        <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '48px',
+            textAlign: 'center',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              backgroundColor: '#ffebe8',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px',
+              fontSize: '32px'
+            }}>
+              !
+            </div>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+              Todo not found
+            </h3>
+            <p style={{ color: '#65676b', marginBottom: '20px' }}>{error}</p>
+            <Link
+              href="/todos"
+              style={{
+                display: 'inline-block',
+                padding: '12px 24px',
+                backgroundColor: '#1877f2',
+                color: '#ffffff',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontWeight: '600'
+              }}
+            >
+              Back to Todos
+            </Link>
+          </div>
+        </main>
       </div>
     );
   }
@@ -158,266 +208,485 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
   if (!todo) return null;
 
   return (
-    <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
-
-        .input-field-todo {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          border: 2px solid rgba(107, 70, 193, 0.15);
-          background: rgba(255, 255, 255, 0.9);
-        }
-
-        .input-field-todo:focus {
-          outline: none;
-          border-color: #7B68EE;
-          background: rgba(255, 255, 255, 1);
-          box-shadow:
-            0 0 0 4px rgba(123, 104, 238, 0.1),
-            0 4px 12px rgba(123, 104, 238, 0.15);
-          transform: translateY(-1px);
-        }
-
-        .btn-primary-todo {
-          background: linear-gradient(135deg, #7B68EE 0%, #C471ED 100%);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow:
-            0 4px 16px rgba(123, 104, 238, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-        }
-
-        .btn-primary-todo:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow:
-            0 8px 24px rgba(123, 104, 238, 0.4),
-            0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-        }
-
-        .btn-primary-todo:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-      `}</style>
-
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          {/* Back Button */}
-          <Link
-            href="/todos"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-purple-600 mb-6 transition-colors"
-            style={{ fontFamily: 'DM Sans, sans-serif' }}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to todos
-          </Link>
-
-          {/* Header */}
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                {isEditing ? 'Edit Todo' : 'Todo Details'}
-              </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                <span>Created: {new Date(todo.created_at).toLocaleDateString()}</span>
-                {todo.updated_at !== todo.created_at && (
-                  <span>Updated: {new Date(todo.updated_at).toLocaleDateString()}</span>
-                )}
-              </div>
-            </div>
-            {!isEditing && (
+    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '24px',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+          }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '12px' }}>
+              Delete Todo?
+            </h3>
+            <p style={{ color: '#65676b', marginBottom: '24px' }}>
+              Are you sure you want to delete &quot;{todo.title}&quot;? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button
-                onClick={() => setIsEditing(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all inline-flex items-center gap-2"
-                style={{ fontFamily: 'DM Sans, sans-serif' }}
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#e4e6eb',
+                  color: '#1c1e21',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit
+                Cancel
               </button>
-            )}
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-              <div className="flex items-start">
-                <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <p className="text-sm font-medium text-red-800" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                  {error}
-                </p>
-              </div>
+              <button
+                onClick={handleDelete}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#dd3c10',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Delete
+              </button>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {/* View Mode */}
+      {/* Header */}
+      <header style={{
+        backgroundColor: '#1877f2',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{
+          maxWidth: '680px',
+          margin: '0 auto',
+          padding: '0 16px',
+          height: '56px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Link href="/todos" style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#ffffff',
+            textDecoration: 'none'
+          }}>
+            Todo App
+          </Link>
           {!isEditing && (
-            <div className="space-y-6">
-              {/* Main Card */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
-                <div className="mb-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <button
-                      onClick={toggleStatus}
-                      className={`flex-shrink-0 w-8 h-8 rounded-lg border-2 transition-all ${
-                        todo.status === 'completed'
-                          ? 'bg-gradient-to-br from-purple-500 to-pink-500 border-transparent'
-                          : 'border-gray-300 hover:border-purple-400'
-                      }`}
-                    >
-                      {todo.status === 'completed' && (
-                        <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                    <h2
-                      className={`text-3xl font-bold ${
-                        todo.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'
-                      }`}
-                      style={{ fontFamily: 'Outfit, sans-serif' }}
-                    >
-                      {todo.title}
-                    </h2>
-                  </div>
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#ffffff',
+                color: '#1877f2',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}
+            >
+              Edit
+            </button>
+          )}
+        </div>
+      </header>
 
-                  {todo.description && (
-                    <div className="ml-12">
-                      <p
-                        className={`text-lg ${
-                          todo.status === 'completed' ? 'text-gray-400' : 'text-gray-700'
-                        }`}
-                        style={{ fontFamily: 'DM Sans, sans-serif' }}
-                      >
+      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
+        {/* Back Link */}
+        <Link
+          href="/todos"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#1877f2',
+            textDecoration: 'none',
+            fontSize: '14px',
+            marginBottom: '24px'
+          }}
+        >
+          <span style={{ fontSize: '18px' }}>&larr;</span>
+          Back to todos
+        </Link>
+
+        {/* Error */}
+        {error && (
+          <div style={{
+            backgroundColor: '#ffebe8',
+            border: '1px solid #dd3c10',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginBottom: '24px',
+            color: '#dd3c10',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* View Mode */}
+        {!isEditing && (
+          <>
+            {/* Todo Card */}
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}>
+              <div style={{ padding: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  {/* Checkbox */}
+                  <button
+                    onClick={toggleStatus}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      border: todo.status === 'completed' ? 'none' : '3px solid #bec3c9',
+                      backgroundColor: todo.status === 'completed' ? '#42b72a' : 'transparent',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    {todo.status === 'completed' && (
+                      <span style={{ color: '#ffffff', fontSize: '18px', fontWeight: 'bold' }}>✓</span>
+                    )}
+                  </button>
+
+                  {/* Content */}
+                  <div style={{ flex: 1 }}>
+                    <h1 style={{
+                      fontSize: '24px',
+                      fontWeight: 'bold',
+                      color: todo.status === 'completed' ? '#bec3c9' : '#1c1e21',
+                      textDecoration: todo.status === 'completed' ? 'line-through' : 'none',
+                      marginBottom: '8px'
+                    }}>
+                      {todo.title}
+                    </h1>
+                    {todo.description && (
+                      <p style={{
+                        fontSize: '16px',
+                        color: todo.status === 'completed' ? '#bec3c9' : '#65676b',
+                        lineHeight: '1.5',
+                        whiteSpace: 'pre-wrap'
+                      }}>
                         {todo.description}
                       </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="ml-12 pt-4 border-t border-gray-200">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        todo.status === 'completed' ? 'bg-green-500' : 'bg-purple-500'
-                      }`}
-                    ></span>
-                    <span className="text-sm font-semibold text-gray-700 capitalize" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                      {todo.status}
-                    </span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-4">
-                <button
-                  onClick={toggleStatus}
-                  className="flex-1 py-3 px-6 rounded-xl font-semibold bg-white/90 hover:bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-300 transition-all"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  Mark as {todo.status === 'active' ? 'Completed' : 'Active'}
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="py-3 px-6 rounded-xl font-semibold bg-red-500 hover:bg-red-600 text-white transition-all"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  Delete
-                </button>
+              {/* Footer */}
+              <div style={{
+                padding: '16px 24px',
+                backgroundColor: '#f7f8fa',
+                borderTop: '1px solid #e4e6eb',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '13px', color: '#65676b' }}>
+                  Created {new Date(todo.created_at).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                  {todo.updated_at !== todo.created_at && (
+                    <> · Updated {new Date(todo.updated_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric'
+                    })}</>
+                  )}
+                </div>
+                <span style={{
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  backgroundColor: todo.status === 'completed' ? '#d4edda' : '#e7f3ff',
+                  color: todo.status === 'completed' ? '#28a745' : '#1877f2',
+                  textTransform: 'capitalize'
+                }}>
+                  {todo.status}
+                </span>
               </div>
             </div>
-          )}
 
-          {/* Edit Mode */}
-          {isEditing && (
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title Field */}
-                <div>
-                  <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                    Title *
+            {/* Action Buttons */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '12px',
+              marginTop: '24px'
+            }}>
+              <button
+                onClick={toggleStatus}
+                style={{
+                  padding: '14px 24px',
+                  backgroundColor: '#ffffff',
+                  color: '#1c1e21',
+                  border: '1px solid #ccd0d5',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600'
+                }}
+              >
+                Mark as {todo.status === 'active' ? 'Completed' : 'Active'}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                style={{
+                  padding: '14px 24px',
+                  backgroundColor: '#ffebe8',
+                  color: '#dd3c10',
+                  border: '1px solid #dd3c10',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600'
+                }}
+              >
+                Delete Todo
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Edit Mode */}
+        {isEditing && (
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden'
+          }}>
+            {/* Card Header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #e4e6eb'
+            }}>
+              <h1 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#1c1e21',
+                margin: 0
+              }}>
+                Edit Todo
+              </h1>
+            </div>
+
+            {/* Card Body */}
+            <div style={{ padding: '24px' }}>
+              <form onSubmit={handleSubmit}>
+                {/* Title */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label
+                    htmlFor="title"
+                    style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#1c1e21',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    Title <span style={{ color: '#dd3c10' }}>*</span>
                   </label>
                   <input
                     id="title"
-                    name="title"
                     type="text"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="input-field-todo block w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400"
-                    placeholder="What needs to be done?"
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
-                    maxLength={200}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '16px',
+                      border: '1px solid #ccd0d5',
+                      borderRadius: '6px',
+                      outline: 'none',
+                      backgroundColor: '#f5f6f7',
+                      color: '#1c1e21',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1877f2';
+                      e.target.style.backgroundColor = '#ffffff';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#ccd0d5';
+                      e.target.style.backgroundColor = '#f5f6f7';
+                    }}
                   />
-                  <p className="mt-1 text-xs text-gray-500" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                    {title.length}/200 characters
-                  </p>
                 </div>
 
-                {/* Description Field */}
-                <div>
-                  <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                {/* Description */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label
+                    htmlFor="description"
+                    style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#1c1e21',
+                      marginBottom: '8px'
+                    }}
+                  >
                     Description
                   </label>
                   <textarea
                     id="description"
-                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="input-field-todo block w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 resize-none"
-                    placeholder="Add more details about this todo..."
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '16px',
+                      border: '1px solid #ccd0d5',
+                      borderRadius: '6px',
+                      outline: 'none',
+                      backgroundColor: '#f5f6f7',
+                      color: '#1c1e21',
+                      resize: 'vertical',
+                      minHeight: '100px',
+                      boxSizing: 'border-box',
+                      fontFamily: 'inherit'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1877f2';
+                      e.target.style.backgroundColor = '#ffffff';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#ccd0d5';
+                      e.target.style.backgroundColor = '#f5f6f7';
+                    }}
                   />
                 </div>
 
-                {/* Status Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                {/* Status */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#1c1e21',
+                    marginBottom: '12px'
+                  }}>
                     Status
                   </label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center cursor-pointer">
+                  <div style={{ display: 'flex', gap: '16px' }}>
+                    <label style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      padding: '12px 20px',
+                      borderRadius: '6px',
+                      border: status === 'active' ? '2px solid #1877f2' : '2px solid #e4e6eb',
+                      backgroundColor: status === 'active' ? '#e7f3ff' : '#ffffff'
+                    }}>
                       <input
                         type="radio"
                         name="status"
                         value="active"
                         checked={status === 'active'}
                         onChange={() => setStatus('active')}
-                        className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        style={{ display: 'none' }}
                       />
-                      <span className="ml-2 text-gray-700" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                        Active
-                      </span>
+                      <span style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        border: status === 'active' ? '6px solid #1877f2' : '2px solid #bec3c9',
+                        backgroundColor: '#ffffff'
+                      }} />
+                      <span style={{
+                        fontWeight: '600',
+                        color: status === 'active' ? '#1877f2' : '#65676b'
+                      }}>Active</span>
                     </label>
-                    <label className="flex items-center cursor-pointer">
+                    <label style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      padding: '12px 20px',
+                      borderRadius: '6px',
+                      border: status === 'completed' ? '2px solid #42b72a' : '2px solid #e4e6eb',
+                      backgroundColor: status === 'completed' ? '#d4edda' : '#ffffff'
+                    }}>
                       <input
                         type="radio"
                         name="status"
                         value="completed"
                         checked={status === 'completed'}
                         onChange={() => setStatus('completed')}
-                        className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        style={{ display: 'none' }}
                       />
-                      <span className="ml-2 text-gray-700" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                        Completed
-                      </span>
+                      <span style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        border: status === 'completed' ? '6px solid #42b72a' : '2px solid #bec3c9',
+                        backgroundColor: '#ffffff'
+                      }} />
+                      <span style={{
+                        fontWeight: '600',
+                        color: status === 'completed' ? '#42b72a' : '#65676b'
+                      }}>Completed</span>
                     </label>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
+                {/* Buttons */}
+                <div style={{
+                  display: 'flex',
+                  gap: '12px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid #e4e6eb'
+                }}>
                   <button
                     type="submit"
                     disabled={isSubmitting || !title.trim()}
-                    className="btn-primary-todo flex-1 py-3.5 px-6 rounded-xl text-white font-semibold"
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      backgroundColor: isSubmitting || !title.trim() ? '#bec3c9' : '#1877f2',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: isSubmitting || !title.trim() ? 'not-allowed' : 'pointer'
+                    }}
                   >
                     {isSubmitting ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -430,17 +699,25 @@ export default function TodoDetailPage({ params }: { params: { id: string } }) {
                       setStatus(todo.status);
                       setError('');
                     }}
-                    className="flex-1 py-3.5 px-6 rounded-xl text-gray-700 font-semibold bg-gray-100 hover:bg-gray-200 transition-all"
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                    style={{
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      backgroundColor: '#e4e6eb',
+                      color: '#1c1e21',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
                   >
                     Cancel
                   </button>
                 </div>
               </form>
             </div>
-          )}
-        </div>
-      </div>
-    </>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }
