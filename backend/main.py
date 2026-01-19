@@ -112,5 +112,7 @@ async def database_health_check():
 
 # Include routers
 from routers import todos
+from routers import auth_router
 
 app.include_router(todos.router)
+app.include_router(auth_router.router)
