@@ -19,6 +19,9 @@ python-dotenv==1.0.0
 pydantic==2.5.3
 pydantic-settings==2.1.0
 
+# Email validation for Pydantic EmailStr
+email-validator==2.1.0
+
 # Testing dependencies
 requests==2.31.0
 
@@ -28,3 +31,6 @@ python-jose[cryptography]==3.3.0
 
 # Password hashing (if not using Better Auth's hashing)
 passlib[bcrypt]==1.7.4
+
+# Production server
+gunicorn==21.2.0

@@ -1,0 +1,21 @@
+# Render Blueprint Configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: todo-api
+    runtime: python
+    region: singapore  # Change to your preferred region
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set manually in Render dashboard
+      - key: CORS_ORIGINS
+        sync: false  # Set manually (your Vercel frontend URL)
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /health
