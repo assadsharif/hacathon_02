@@ -3,14 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Configure API proxy to backend during development
-  // Exclude /api/auth/* to allow Better Auth to handle authentication
+  // In production, set NEXT_PUBLIC_API_URL to the deployed backend URL
   async rewrites() {
-    return [
-      {
-        source: "/api/todos/:path*",
-        destination: "http://localhost:8000/api/todos/:path*",
-      },
-    ];
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    // Only use rewrites in development (when using localhost)
+    if (apiUrl.includes("localhost")) {
+      return [
+        {
+          source: "/api/todos/:path*",
+          destination: `${apiUrl}/api/todos/:path*`,
+        },
+      ];
+    }
+    // In production, frontend calls backend directly via NEXT_PUBLIC_API_URL
+    return [];
   },
 };
 
