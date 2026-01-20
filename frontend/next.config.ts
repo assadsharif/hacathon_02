@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Enable standalone output for Docker deployment
+  output: "standalone",
   // Configure API proxy to backend during development
   // In production, set NEXT_PUBLIC_API_URL to the deployed backend URL
   async rewrites() {

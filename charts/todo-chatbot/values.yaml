@@ -1,0 +1,110 @@
+# Default values for todo-chatbot Helm chart
+# Phase IV: Kubernetes Deployment
+
+# Global settings
+global:
+  namespace: todo-chatbot
+
+# Backend (FastAPI) configuration
+backend:
+  name: backend
+  replicaCount: 1
+  image:
+    repository: todo-chatbot-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    # Database connection - overridden by secrets
+    DATABASE_URL: ""
+    # CORS origins for frontend
+    CORS_ORIGINS: "http://todo-chatbot.local,http://localhost:3000"
+  healthCheck:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+# Frontend (Next.js) configuration
+frontend:
+  name: frontend
+  replicaCount: 1
+  image:
+    repository: todo-chatbot-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    # Backend API URL (internal service URL)
+    NEXT_PUBLIC_API_URL: "http://backend:8000"
+  healthCheck:
+    path: /
+    initialDelaySeconds: 15
+    periodSeconds: 10
+
+# PostgreSQL Database configuration
+database:
+  name: postgres
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  storage:
+    size: 1Gi
+    className: standard
+  credentials:
+    # These should be overridden during installation
+    database: tododb
+    username: todouser
+    password: todopassword
+
+# Secrets configuration
+secrets:
+  # Database URL constructed from database credentials
+  # Format: postgresql://user:pass@host:port/db
+  databaseUrl: ""
+  # JWT secret for authentication
+  jwtSecret: "your-super-secret-jwt-key-change-in-production"
+  # Better Auth secret
+  betterAuthSecret: "your-better-auth-secret-change-in-production"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+  host: todo-chatbot.local
+  tls: []
+  # - secretName: todo-chatbot-tls
+  #   hosts:
+  #     - todo-chatbot.local

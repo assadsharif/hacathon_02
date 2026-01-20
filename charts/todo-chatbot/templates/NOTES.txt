@@ -1,0 +1,73 @@
+========================================
+  Todo Chatbot - Phase IV Deployment
+========================================
+
+Congratulations! Your Todo Chatbot application has been deployed.
+
+1. Get the application URL:
+{{- if .Values.ingress.enabled }}
+
+   The application is available at:
+   http://{{ .Values.ingress.host }}
+
+   Make sure to add the following entry to your /etc/hosts file:
+
+   $(minikube ip -p todo-chatbot) {{ .Values.ingress.host }}
+
+{{- else }}
+
+   Get the frontend URL by running:
+   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "todo-chatbot.name" . }},app.kubernetes.io/component=frontend" -o jsonpath="{.items[0].metadata.name}")
+   kubectl port-forward $POD_NAME 3000:{{ .Values.frontend.service.port }}
+
+{{- end }}
+
+2. Check deployment status:
+
+   kubectl get pods -n {{ .Release.Namespace }}
+   kubectl get services -n {{ .Release.Namespace }}
+
+3. View logs:
+
+   # Frontend logs
+   kubectl logs -l app.kubernetes.io/component=frontend -n {{ .Release.Namespace }}
+
+   # Backend logs
+   kubectl logs -l app.kubernetes.io/component=backend -n {{ .Release.Namespace }}
+
+   # Database logs
+   kubectl logs -l app.kubernetes.io/component=database -n {{ .Release.Namespace }}
+
+4. Quick test:
+
+   # Test backend health
+   curl http://{{ .Values.ingress.host }}/health
+
+   # Test API docs
+   open http://{{ .Values.ingress.host }}/docs
+
+5. E2E Test Flow:
+
+   a. Open http://{{ .Values.ingress.host }} in your browser
+   b. Sign up or Sign in
+   c. Navigate to /chat
+   d. Ask "Show my tasks"
+   e. Create a task via chat: "Add a task called test-k8s"
+   f. Verify the task appears in /todos
+
+========================================
+  Useful Commands
+========================================
+
+# Scale deployments
+kubectl scale deployment {{ include "todo-chatbot.backend.name" . }} --replicas=2 -n {{ .Release.Namespace }}
+kubectl scale deployment {{ include "todo-chatbot.frontend.name" . }} --replicas=2 -n {{ .Release.Namespace }}
+
+# Restart deployments
+kubectl rollout restart deployment {{ include "todo-chatbot.backend.name" . }} -n {{ .Release.Namespace }}
+kubectl rollout restart deployment {{ include "todo-chatbot.frontend.name" . }} -n {{ .Release.Namespace }}
+
+# Uninstall
+helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+========================================
