@@ -1,0 +1,55 @@
+# [Task]: T032
+# Audit Service Deployment with Dapr annotations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-audit-service
+  labels:
+    app: audit-service
+    app.kubernetes.io/name: audit-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: todo-chatbot
+spec:
+  replicas: {{ .Values.auditService.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: audit-service
+  template:
+    metadata:
+      labels:
+        app: audit-service
+        app.kubernetes.io/name: audit-service
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "audit-service"
+        dapr.io/app-port: "8001"
+        dapr.io/enable-api-logging: "true"
+        dapr.io/log-level: "info"
+    spec:
+      containers:
+        - name: audit-service
+          image: "{{ .Values.auditService.image.repository }}:{{ .Values.auditService.image.tag }}"
+          imagePullPolicy: {{ .Values.auditService.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          env:
+            - name: DAPR_HTTP_PORT
+              value: "3500"
+            - name: STATE_STORE_NAME
+              value: "statestore-postgres"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.auditService.resources | nindent 12 }}

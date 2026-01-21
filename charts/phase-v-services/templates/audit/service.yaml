@@ -1,0 +1,19 @@
+# [Task]: T033
+# Audit Service Kubernetes Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-audit-service
+  labels:
+    app: audit-service
+    app.kubernetes.io/name: audit-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8001
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: audit-service

@@ -1,14 +1,16 @@
 /**
  * Todo List Page
  * Facebook-style design with inline styles
+ * [Task]: T054 - Added WebSocket real-time sync
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createAuthenticatedApi, Todo } from '@/lib/api';
+import { useTaskWebSocket } from '@/hooks/useTaskWebSocket';
 
 interface User {
   id: string;
@@ -41,27 +43,44 @@ export default function TodosPage() {
     setUser(JSON.parse(storedUser));
   }, [router]);
 
+  // Load todos function
+  const loadTodos = useCallback(async () => {
+    if (!token) return;
+    try {
+      setIsLoading(true);
+      setError('');
+      const api = createAuthenticatedApi(token);
+      const statusFilter = filter === 'all' ? undefined : filter;
+      const data = await api.listTodos(statusFilter);
+      setTodos(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load todos');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token, filter]);
+
   // Load todos when token is available
   useEffect(() => {
-    if (!token) return;
-
-    const loadTodos = async () => {
-      try {
-        setIsLoading(true);
-        setError('');
-        const api = createAuthenticatedApi(token);
-        const statusFilter = filter === 'all' ? undefined : filter;
-        const data = await api.listTodos(statusFilter);
-        setTodos(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load todos');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadTodos();
-  }, [token, filter]);
+  }, [loadTodos]);
+
+  // [Task]: T054 - WebSocket real-time sync
+  const { isConnected } = useTaskWebSocket(token, {
+    onTaskCreated: () => loadTodos(),
+    onTaskUpdated: () => loadTodos(),
+    onTaskCompleted: () => loadTodos(),
+    onTaskDeleted: () => loadTodos(),
+    onReminderTriggered: (data) => {
+      // Show notification for reminder
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Task Reminder', {
+          body: data.title || 'You have a task due!',
+          icon: '/favicon.ico'
+        });
+      }
+    }
+  });
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {

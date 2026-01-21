@@ -32,6 +32,9 @@ backend:
     path: /health
     initialDelaySeconds: 10
     periodSeconds: 10
+  # Dapr sidecar configuration (Phase V)
+  dapr:
+    enabled: false
 
 # Frontend (Next.js) configuration
 frontend:
@@ -58,6 +61,9 @@ frontend:
     path: /
     initialDelaySeconds: 15
     periodSeconds: 10
+  # Dapr sidecar configuration (Phase V)
+  dapr:
+    enabled: false
 
 # PostgreSQL Database configuration
 database:

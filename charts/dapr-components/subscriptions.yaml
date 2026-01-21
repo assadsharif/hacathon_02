@@ -1,0 +1,68 @@
+# [Task]: T009
+# Dapr Subscriptions for Phase V Services
+# Reference: https://docs.dapr.io/developing-applications/building-blocks/pubsub/subscription-methods/
+
+---
+# Subscription for Backend Service (receives callbacks for WebSocket broadcast)
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: backend-subscription
+  namespace: default
+spec:
+  topic: task-events
+  routes:
+    default: /events/task
+  pubsubname: pubsub-kafka
+
+---
+# Subscription for Audit Service - receives ALL events
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: audit-subscription
+  namespace: default
+spec:
+  topic: task-events
+  routes:
+    default: /events/audit
+  pubsubname: pubsub-kafka
+
+---
+# Subscription for Reminder Service - routes by event type
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: reminder-subscription
+  namespace: default
+spec:
+  topic: task-events
+  routes:
+    rules:
+      # Handle new tasks with due dates
+      - match: event.type == "task.created"
+        path: /events/task-created
+      # Handle updates (due date changes)
+      - match: event.type == "task.updated"
+        path: /events/task-updated
+      # Handle deletions (cancel reminders)
+      - match: event.type == "task.deleted"
+        path: /events/task-deleted
+    default: /events/task
+  pubsubname: pubsub-kafka
+
+---
+# Subscription for Recurring Service - only task.completed events
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: recurring-subscription
+  namespace: default
+spec:
+  topic: task-events
+  routes:
+    rules:
+      # Only process completed tasks
+      - match: event.type == "task.completed"
+        path: /events/task-completed
+  pubsubname: pubsub-kafka

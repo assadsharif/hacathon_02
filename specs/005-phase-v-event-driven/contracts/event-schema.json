@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Phase V Task Events",
+  "description": "CloudEvents-based schema for task lifecycle events",
+  "definitions": {
+    "CloudEventBase": {
+      "type": "object",
+      "required": ["specversion", "type", "source", "id", "time", "datacontenttype", "data"],
+      "properties": {
+        "specversion": {
+          "type": "string",
+          "const": "1.0"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["task.created", "task.updated", "task.completed", "task.deleted"]
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^/todo-chatbot/.+"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^evt-[a-f0-9-]+$"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "datacontenttype": {
+          "type": "string",
+          "const": "application/json"
+        }
+      }
+    },
+    "Recurrence": {
+      "type": "object",
+      "properties": {
+        "rule": {
+          "type": "string",
+          "enum": ["daily", "weekly", "monthly"]
+        },
+        "interval": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "endDate": {
+          "type": ["integer", "null"],
+          "description": "Unix timestamp or null for infinite"
+        }
+      },
+      "required": ["rule", "interval"]
+    },
+    "TaskCreatedData": {
+      "type": "object",
+      "required": ["taskId", "userId", "title", "status", "createdAt"],
+      "properties": {
+        "taskId": { "type": "integer" },
+        "userId": { "type": "string", "format": "uuid" },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"], "default": "medium" },
+        "dueDate": { "type": ["integer", "null"], "description": "Unix timestamp" },
+        "reminderAt": { "type": ["integer", "null"], "description": "Unix timestamp" },
+        "recurrence": { "$ref": "#/definitions/Recurrence" },
+        "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 10 },
+        "parentTaskId": { "type": ["integer", "null"] },
+        "createdAt": { "type": "integer", "description": "Unix timestamp" }
+      }
+    },
+    "TaskUpdatedData": {
+      "type": "object",
+      "required": ["taskId", "userId", "changes", "updatedAt"],
+      "properties": {
+        "taskId": { "type": "integer" },
+        "userId": { "type": "string", "format": "uuid" },
+        "changes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "old": {},
+              "new": {}
+            },
+            "required": ["old", "new"]
+          }
+        },
+        "updatedAt": { "type": "integer", "description": "Unix timestamp" }
+      }
+    },
+    "TaskCompletedData": {
+      "type": "object",
+      "required": ["taskId", "userId", "completedAt"],
+      "properties": {
+        "taskId": { "type": "integer" },
+        "userId": { "type": "string", "format": "uuid" },
+        "isRecurring": { "type": "boolean", "default": false },
+        "recurrence": { "$ref": "#/definitions/Recurrence" },
+        "completedAt": { "type": "integer", "description": "Unix timestamp" }
+      }
+    },
+    "TaskDeletedData": {
+      "type": "object",
+      "required": ["taskId", "userId", "deletedAt"],
+      "properties": {
+        "taskId": { "type": "integer" },
+        "userId": { "type": "string", "format": "uuid" },
+        "deletedAt": { "type": "integer", "description": "Unix timestamp" }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "allOf": [
+        { "$ref": "#/definitions/CloudEventBase" },
+        {
+          "properties": {
+            "type": { "const": "task.created" },
+            "data": { "$ref": "#/definitions/TaskCreatedData" }
+          }
+        }
+      ]
+    },
+    {
+      "allOf": [
+        { "$ref": "#/definitions/CloudEventBase" },
+        {
+          "properties": {
+            "type": { "const": "task.updated" },
+            "data": { "$ref": "#/definitions/TaskUpdatedData" }
+          }
+        }
+      ]
+    },
+    {
+      "allOf": [
+        { "$ref": "#/definitions/CloudEventBase" },
+        {
+          "properties": {
+            "type": { "const": "task.completed" },
+            "data": { "$ref": "#/definitions/TaskCompletedData" }
+          }
+        }
+      ]
+    },
+    {
+      "allOf": [
+        { "$ref": "#/definitions/CloudEventBase" },
+        {
+          "properties": {
+            "type": { "const": "task.deleted" },
+            "data": { "$ref": "#/definitions/TaskDeletedData" }
+          }
+        }
+      ]
+    }
+  ]
+}

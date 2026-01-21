@@ -1,0 +1,43 @@
+# Dapr State Store Component Configuration
+# PostgreSQL-backed state store for Audit Service
+#
+# Reference: https://docs.dapr.io/reference/components-reference/supported-state-stores/setup-postgresql/
+
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: statestore-postgres
+  namespace: default
+spec:
+  type: state.postgresql
+  version: v1
+  metadata:
+    # Connection string (use Dapr Secret Store in production)
+    - name: connectionString
+      secretKeyRef:
+        name: db-secrets
+        key: DATABASE_URL
+
+    # Table name for state storage
+    - name: tableName
+      value: "dapr_state"
+
+    # Actor state table (for Scheduler)
+    - name: actorStateStore
+      value: "true"
+
+---
+# Dapr Secret Store Component
+# Kubernetes Secrets backend
+#
+# Reference: https://docs.dapr.io/reference/components-reference/supported-secret-stores/kubernetes-secrets/
+
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: kubernetes-secrets
+  namespace: default
+spec:
+  type: secretstores.kubernetes
+  version: v1
+  metadata: []

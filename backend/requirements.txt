@@ -35,3 +35,7 @@ bcrypt==4.1.2
 
 # Production server
 gunicorn==21.2.0
+
+# [Task]: T021 - Phase V Event Publishing
+# HTTP client for Dapr sidecar communication
+httpx>=0.26.0

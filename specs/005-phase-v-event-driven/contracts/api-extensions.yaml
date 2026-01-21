@@ -1,0 +1,423 @@
+# Phase V API Extensions
+# OpenAPI 3.1 specification for new/modified endpoints
+
+openapi: "3.1.0"
+info:
+  title: Todo Chatbot API - Phase V Extensions
+  version: "5.0.0"
+  description: |
+    Extended API for Phase V event-driven architecture.
+    Adds advanced task features, search/filter, and WebSocket support.
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+  - url: http://todo-chatbot.local
+    description: Minikube ingress
+
+paths:
+  # Extended Todo endpoints
+  /api/todos:
+    get:
+      summary: List todos with filters
+      description: Get todos with advanced filtering, sorting, and pagination
+      tags: [Todos]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, completed, all]
+            default: all
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high]
+        - name: tag
+          in: query
+          schema:
+            type: string
+          description: Filter by tag name
+        - name: due_before
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: due_after
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Full-text search in title and description
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [created_at, due_date, priority, title]
+            default: created_at
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Paginated list of todos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoListResponse"
+
+    post:
+      summary: Create todo
+      description: Create a new todo with advanced features
+      tags: [Todos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoCreateRequest"
+      responses:
+        "201":
+          description: Todo created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+  /api/todos/{id}:
+    patch:
+      summary: Update todo
+      description: Partial update of todo fields
+      tags: [Todos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoUpdateRequest"
+      responses:
+        "200":
+          description: Todo updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+  /api/todos/{id}/complete:
+    post:
+      summary: Mark todo as completed
+      description: Mark task complete (triggers recurring logic if applicable)
+      tags: [Todos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Todo completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+  # Tags endpoints
+  /api/tags:
+    get:
+      summary: List user's tags
+      tags: [Tags]
+      responses:
+        "200":
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
+
+    post:
+      summary: Create tag
+      tags: [Tags]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+      responses:
+        "201":
+          description: Tag created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+
+  # Audit log endpoints
+  /api/audit:
+    get:
+      summary: Get audit log
+      description: Retrieve task event history (read-only)
+      tags: [Audit]
+      parameters:
+        - name: task_id
+          in: query
+          schema:
+            type: integer
+        - name: event_type
+          in: query
+          schema:
+            type: string
+            enum: [task.created, task.updated, task.completed, task.deleted]
+        - name: after
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+      responses:
+        "200":
+          description: List of audit events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditEvent"
+
+  # WebSocket endpoint
+  /ws/tasks:
+    get:
+      summary: WebSocket for real-time task updates
+      description: |
+        Connect via WebSocket for real-time task event notifications.
+        Authentication: Pass JWT token as query parameter `token`.
+      tags: [WebSocket]
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: JWT access token
+      responses:
+        "101":
+          description: Switching Protocols (WebSocket upgrade)
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, completed]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        reminder_at:
+          type: string
+          format: date-time
+          nullable: true
+        recurrence:
+          $ref: "#/components/schemas/Recurrence"
+        tags:
+          type: array
+          items:
+            type: string
+        parent_task_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    TodoCreateRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        priority:
+          type: string
+          enum: [low, medium, high]
+          default: medium
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        reminder_at:
+          type: string
+          format: date-time
+          nullable: true
+        recurrence:
+          $ref: "#/components/schemas/Recurrence"
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+
+    TodoUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, completed]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        reminder_at:
+          type: string
+          format: date-time
+          nullable: true
+        recurrence:
+          $ref: "#/components/schemas/Recurrence"
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+
+    TodoListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Todo"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        pages:
+          type: integer
+
+    Recurrence:
+      type: object
+      nullable: true
+      properties:
+        rule:
+          type: string
+          enum: [daily, weekly, monthly]
+        interval:
+          type: integer
+          minimum: 1
+          default: 1
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        task_id:
+          type: integer
+        event_type:
+          type: string
+          enum: [task.created, task.updated, task.completed, task.deleted]
+        payload:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

@@ -13,6 +13,13 @@ spec:
     metadata:
       labels:
         {{- include "todo-chatbot.frontend.selectorLabels" . | nindent 8 }}
+      {{- if .Values.frontend.dapr.enabled }}
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "frontend"
+        dapr.io/app-port: "{{ .Values.frontend.service.port }}"
+        dapr.io/log-level: "info"
+      {{- end }}
     spec:
       containers:
         - name: {{ .Values.frontend.name }}
