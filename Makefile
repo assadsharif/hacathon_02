@@ -1,15 +1,21 @@
-# Phase IV: Kubernetes Deployment Makefile
-# Todo Chatbot - Minikube + Helm Deployment
+# Phase IV & V: Kubernetes Deployment Makefile
+# Todo Chatbot - Minikube + Helm + Dapr + Strimzi Deployment
+# [Task]: T058 - Added Phase V targets
 
 .PHONY: all setup build deploy validate clean logs status help
+.PHONY: setup-dapr setup-strimzi deploy-phase-v validate-phase-v build-phase-v
 
 # Default target
 all: setup build deploy validate
+
+# Phase V full deployment
+all-phase-v: setup setup-dapr setup-strimzi build build-phase-v deploy deploy-phase-v validate-phase-v
 
 # Configuration
 CLUSTER_NAME := todo-chatbot
 NAMESPACE := todo-chatbot
 RELEASE_NAME := todo-chatbot
+PHASE_V_RELEASE := phase-v-services
 
 #---------------------------------------
 # Setup Commands
@@ -204,17 +210,103 @@ tunnel:
 # Help
 #---------------------------------------
 
+#---------------------------------------
+# Phase V: Event-Driven Architecture
+# [Task]: T058 - Phase V Makefile targets
+#---------------------------------------
+
+## setup-dapr: Install Dapr on Minikube cluster
+setup-dapr:
+	@echo "Setting up Dapr..."
+	@chmod +x scripts/setup-dapr.sh
+	@./scripts/setup-dapr.sh
+
+## setup-strimzi: Install Strimzi Kafka operator
+setup-strimzi:
+	@echo "Setting up Strimzi Kafka..."
+	@chmod +x scripts/setup-strimzi.sh
+	@./scripts/setup-strimzi.sh
+
+## build-phase-v: Build Phase V microservice images
+build-phase-v:
+	@echo "Building Phase V service images..."
+	@eval $$(minikube docker-env -p $(CLUSTER_NAME)) && \
+	docker build -t audit-service:phase-v -f services/audit-service/Dockerfile services/audit-service/ && \
+	docker build -t reminder-service:phase-v -f services/reminder-service/Dockerfile services/reminder-service/ && \
+	docker build -t recurring-service:phase-v -f services/recurring-service/Dockerfile services/recurring-service/
+
+## deploy-phase-v: Deploy Phase V services and components
+deploy-phase-v:
+	@echo "Deploying Phase V infrastructure..."
+	@chmod +x scripts/deploy-phase-v.sh
+	@./scripts/deploy-phase-v.sh
+
+## validate-phase-v: Validate Phase V deployment
+validate-phase-v:
+	@echo "Validating Phase V deployment..."
+	@chmod +x scripts/validate-phase-v.sh
+	@./scripts/validate-phase-v.sh
+
+## logs-audit: Show audit service logs
+logs-audit:
+	@kubectl logs -l app=audit-service -n $(NAMESPACE) -f
+
+## logs-reminder: Show reminder service logs
+logs-reminder:
+	@kubectl logs -l app=reminder-service -n $(NAMESPACE) -f
+
+## logs-recurring: Show recurring service logs
+logs-recurring:
+	@kubectl logs -l app=recurring-service -n $(NAMESPACE) -f
+
+## logs-kafka: Show Kafka logs
+logs-kafka:
+	@kubectl logs -l strimzi.io/name=todo-kafka-kafka -n kafka -f --tail=50
+
+## status-phase-v: Show Phase V deployment status
+status-phase-v:
+	@echo "=== Dapr Status ==="
+	@kubectl get pods -n dapr-system
+	@echo ""
+	@echo "=== Kafka Status ==="
+	@kubectl get kafka -n kafka
+	@kubectl get kafkatopic -n kafka
+	@echo ""
+	@echo "=== Phase V Services ==="
+	@kubectl get pods -n $(NAMESPACE) -l 'app in (audit-service,reminder-service,recurring-service)'
+	@echo ""
+	@echo "=== Dapr Components ==="
+	@kubectl get components -n $(NAMESPACE)
+
+## uninstall-phase-v: Remove Phase V services
+uninstall-phase-v:
+	@echo "Uninstalling Phase V services..."
+	@helm uninstall $(PHASE_V_RELEASE) -n $(NAMESPACE) 2>/dev/null || true
+	@kubectl delete -f charts/dapr-components/ -n $(NAMESPACE) 2>/dev/null || true
+	@kubectl delete -f charts/strimzi-kafka/ -n kafka 2>/dev/null || true
+
+#---------------------------------------
+# Help
+#---------------------------------------
+
 ## help: Show this help message
 help:
 	@echo "Todo Chatbot - Kubernetes Deployment"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Quick Start:"
+	@echo "Quick Start (Phase IV):"
 	@echo "  make setup      - Setup Minikube cluster"
 	@echo "  make build      - Build Docker images"
 	@echo "  make deploy     - Deploy with Helm"
 	@echo "  make validate   - Validate deployment"
+	@echo ""
+	@echo "Phase V (Event-Driven):"
+	@echo "  make setup-dapr    - Install Dapr"
+	@echo "  make setup-strimzi - Install Strimzi Kafka"
+	@echo "  make build-phase-v - Build microservice images"
+	@echo "  make deploy-phase-v - Deploy Phase V services"
+	@echo "  make all-phase-v   - Full Phase V deployment"
 	@echo ""
 	@echo "All targets:"
 	@grep -E '^## ' Makefile | sed 's/## /  /' | column -t -s ':'

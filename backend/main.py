@@ -116,6 +116,13 @@ async def database_health_check():
 # Include routers
 from routers import todos
 from routers import auth_router
+# [Task]: T016, T027, T034, T050 - Phase V routers
+from api import tags_router, events_router, audit_router, websocket_router
 
 app.include_router(todos.router)
 app.include_router(auth_router.router)
+# Phase V endpoints
+app.include_router(tags_router)
+app.include_router(events_router)
+app.include_router(audit_router)
+app.include_router(websocket_router)

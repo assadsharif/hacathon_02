@@ -1,0 +1,46 @@
+# Phase V Services Default Values
+
+# Audit Service
+auditService:
+  replicaCount: 1
+  image:
+    repository: audit-service
+    tag: phase-v
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Reminder Service
+reminderService:
+  replicaCount: 1
+  image:
+    repository: reminder-service
+    tag: phase-v
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Recurring Service
+recurringService:
+  replicaCount: 1
+  image:
+    repository: recurring-service
+    tag: phase-v
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi

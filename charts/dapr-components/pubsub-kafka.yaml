@@ -1,0 +1,43 @@
+# [Task]: T007
+# Dapr Pub/Sub Component - Kafka via Strimzi
+# Reference: https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-apache-kafka/
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub-kafka
+  namespace: default
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+    # Kafka broker address (Strimzi bootstrap service)
+    - name: brokers
+      value: "todo-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092"
+
+    # Consumer group for this application
+    - name: consumerGroup
+      value: "todo-chatbot"
+
+    # Authentication (none for local, sasl for production)
+    - name: authType
+      value: "none"
+
+    # Disable TLS for local development
+    - name: disableTls
+      value: "true"
+
+    # Initial offset for new consumer groups
+    - name: initialOffset
+      value: "oldest"
+
+    # Maximum message size (1MB)
+    - name: maxMessageBytes
+      value: "1048576"
+
+    # Client ID for identification
+    - name: clientID
+      value: "todo-chatbot-backend"
+
+    # Version compatibility
+    - name: version
+      value: "3.7.0"

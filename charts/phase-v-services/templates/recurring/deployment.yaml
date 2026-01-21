@@ -1,0 +1,56 @@
+# [Task]: T048
+# Recurring Service Kubernetes Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-recurring-service
+  labels:
+    app: recurring-service
+    app.kubernetes.io/name: recurring-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: recurring
+spec:
+  replicas: {{ .Values.recurringService.replicaCount }}
+  selector:
+    matchLabels:
+      app: recurring-service
+  template:
+    metadata:
+      labels:
+        app: recurring-service
+        app.kubernetes.io/name: recurring-service
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        # Dapr sidecar injection
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "recurring-service"
+        dapr.io/app-port: "8003"
+        dapr.io/enable-api-logging: "true"
+    spec:
+      containers:
+        - name: recurring-service
+          image: "{{ .Values.recurringService.image.repository }}:{{ .Values.recurringService.image.tag }}"
+          imagePullPolicy: {{ .Values.recurringService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8003
+              protocol: TCP
+          env:
+            - name: DAPR_HTTP_PORT
+              value: "3500"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            {{- toYaml .Values.recurringService.resources | nindent 12 }}

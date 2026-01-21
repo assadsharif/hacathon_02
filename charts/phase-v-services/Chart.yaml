@@ -1,0 +1,18 @@
+# Phase V Services Helm Chart
+apiVersion: v2
+name: phase-v-services
+description: Phase V microservices for event-driven Todo Chatbot
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - dapr
+  - kafka
+  - microservices
+  - event-driven
+
+maintainers:
+  - name: Todo Chatbot Team
+
+dependencies: []

@@ -42,8 +42,20 @@ def create_db_and_tables():
 
     This function should be called on application startup to ensure
     all tables exist in the database.
+
+    Uses checkfirst=True and catches race condition errors when
+    multiple workers try to create tables simultaneously.
     """
-    SQLModel.metadata.create_all(engine)
+    try:
+        SQLModel.metadata.create_all(engine, checkfirst=True)
+    except Exception as e:
+        # Handle race condition when multiple workers try to create tables
+        # If tables already exist, this is not an error
+        error_msg = str(e).lower()
+        if "already exists" in error_msg or "duplicate" in error_msg:
+            print(f"Tables already exist, continuing: {e}")
+        else:
+            raise
 
 
 def get_session() -> Generator[Session, None, None]:

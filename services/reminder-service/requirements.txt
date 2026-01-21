@@ -1,0 +1,23 @@
+# [Task]: T035
+# Reminder Service Dependencies
+# Phase V: Event-Driven Architecture
+
+# FastAPI framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Dapr SDK
+dapr>=1.13.0
+dapr-ext-fastapi>=1.13.0
+
+# HTTP client for Dapr service invocation
+httpx>=0.26.0
+
+# Pydantic for data validation
+pydantic>=2.5.0
+
+# Date/time utilities
+python-dateutil>=2.8.2
+
+# Logging
+structlog>=24.1.0

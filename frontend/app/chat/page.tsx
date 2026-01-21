@@ -1,6 +1,7 @@
 /**
  * Chat Page - AI Todo Assistant Interface
  * [Task]: C1, C2, C3 - Chat UI integration
+ * [Task]: T055 - WebSocket real-time sync
  * [Refs]: specs/phase-iii/plan.md#file-structure
  *
  * This page provides the conversational interface for managing todos
@@ -9,10 +10,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChatWindow } from '@/components/chat';
+import { useTaskWebSocket } from '@/hooks/useTaskWebSocket';
 
 interface User {
   id: string;
@@ -45,6 +47,29 @@ export default function ChatPage() {
     localStorage.removeItem('user');
     router.push('/sign-in');
   };
+
+  // [Task]: T055 - WebSocket real-time sync
+  // Trigger refresh when task events occur from other tabs/users
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const triggerRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
+  const { isConnected } = useTaskWebSocket(token, {
+    onTaskCreated: triggerRefresh,
+    onTaskUpdated: triggerRefresh,
+    onTaskCompleted: triggerRefresh,
+    onTaskDeleted: triggerRefresh,
+    onReminderTriggered: (data) => {
+      // Show notification for reminder
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Task Reminder', {
+          body: data.title || 'You have a task due!',
+          icon: '/favicon.ico'
+        });
+      }
+    }
+  });
 
   // Loading state
   if (!user || !token) {
