@@ -1,0 +1,71 @@
+# [Task]: T052
+# ServiceMonitor for Todo Chatbot application metrics
+{{- if .Values.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: todo-chatbot-backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: todo-chatbot
+    component: backend
+    release: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.applicationMonitoring.appNamespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-chatbot
+      app.kubernetes.io/component: backend
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: todo-chatbot-frontend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: todo-chatbot
+    component: frontend
+    release: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.applicationMonitoring.appNamespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-chatbot
+      app.kubernetes.io/component: frontend
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+# ServiceMonitor for Dapr sidecars
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dapr-sidecars
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: dapr
+    release: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.applicationMonitoring.appNamespace }}
+  selector:
+    matchLabels:
+      dapr.io/enabled: "true"
+  endpoints:
+    - port: dapr-metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+{{- end }}
