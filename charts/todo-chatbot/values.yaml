@@ -114,3 +114,7 @@ ingress:
   # - secretName: todo-chatbot-tls
   #   hosts:
   #     - todo-chatbot.local
+
+# ServiceMonitor for Prometheus (Phase VI Observability)
+serviceMonitor:
+  enabled: false

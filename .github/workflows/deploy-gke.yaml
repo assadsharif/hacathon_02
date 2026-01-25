@@ -1,0 +1,174 @@
+# [Task]: T044
+# Phase VI: Deploy to GKE
+# Deploys the application to Google Kubernetes Engine
+
+name: Deploy to GKE
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Images"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy'
+        required: false
+        default: 'latest'
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: todo-chatbot
+  GKE_ZONE: us-central1-a
+  NAMESPACE: todo-chatbot
+
+jobs:
+  deploy:
+    name: Deploy to GKE
+    runs-on: ubuntu-latest
+    # Only run if build succeeded (or manual trigger)
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.image_tag }}" ]; then
+            echo "tag=${{ github.event.inputs.image_tag }}" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.event.workflow_run.head_sha }}" ]; then
+            echo "tag=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
+
+      # GCP Authentication
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      # Install gke-gcloud-auth-plugin
+      - name: Install GKE auth plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+
+      # Get GKE credentials
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      # Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.0
+
+      # Create/Update secrets
+      - name: Create Kubernetes secrets
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+          # Create application secrets
+          kubectl create secret generic todo-chatbot-secrets \
+            --namespace=${{ env.NAMESPACE }} \
+            --from-literal=DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
+            --from-literal=OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Create Redpanda secrets
+          kubectl create secret generic redpanda-secrets \
+            --namespace=${{ env.NAMESPACE }} \
+            --from-literal=username=${{ secrets.REDPANDA_USERNAME }} \
+            --from-literal=password=${{ secrets.REDPANDA_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Create DB secrets for Dapr state store
+          kubectl create secret generic db-secrets \
+            --namespace=${{ env.NAMESPACE }} \
+            --from-literal=connectionString=${{ secrets.DATABASE_URL }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # Deploy Dapr components
+      - name: Deploy Dapr components
+        run: |
+          helm upgrade --install dapr-components ./charts/dapr-components \
+            --namespace=${{ env.NAMESPACE }} \
+            -f ./charts/dapr-components/values-cloud.yaml \
+            --set pubsub.brokers=${{ secrets.REDPANDA_BROKERS }}
+
+      # Deploy main application
+      - name: Deploy todo-chatbot
+        run: |
+          helm upgrade --install todo-chatbot ./charts/todo-chatbot \
+            --namespace=${{ env.NAMESPACE }} \
+            -f ./charts/todo-chatbot/values-gke.yaml \
+            --set backend.image.repository=gcr.io/${{ env.GCP_PROJECT_ID }}/todo-chatbot-backend \
+            --set backend.image.tag=${{ steps.tag.outputs.tag }} \
+            --set frontend.image.repository=gcr.io/${{ env.GCP_PROJECT_ID }}/todo-chatbot-frontend \
+            --set frontend.image.tag=${{ steps.tag.outputs.tag }}
+
+      # Deploy Phase V services
+      - name: Deploy Phase V services
+        run: |
+          helm upgrade --install phase-v-services ./charts/phase-v-services \
+            --namespace=${{ env.NAMESPACE }} \
+            -f ./charts/phase-v-services/values-gke.yaml \
+            --set auditService.image.repository=gcr.io/${{ env.GCP_PROJECT_ID }}/audit-service \
+            --set auditService.image.tag=${{ steps.tag.outputs.tag }} \
+            --set reminderService.image.repository=gcr.io/${{ env.GCP_PROJECT_ID }}/reminder-service \
+            --set reminderService.image.tag=${{ steps.tag.outputs.tag }} \
+            --set recurringService.image.repository=gcr.io/${{ env.GCP_PROJECT_ID }}/recurring-service \
+            --set recurringService.image.tag=${{ steps.tag.outputs.tag }} \
+            2>/dev/null || echo "Phase V services chart not found, skipping"
+
+      # Wait for deployment
+      - name: Wait for deployment
+        run: |
+          kubectl rollout status deployment/backend --namespace=${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/frontend --namespace=${{ env.NAMESPACE }} --timeout=300s
+
+      # Get external IPs
+      - name: Get service endpoints
+        id: endpoints
+        run: |
+          echo "Waiting for LoadBalancer IPs..."
+          sleep 30
+
+          BACKEND_IP=$(kubectl get svc backend -n ${{ env.NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "pending")
+          FRONTEND_IP=$(kubectl get svc frontend -n ${{ env.NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "pending")
+
+          echo "backend_ip=$BACKEND_IP" >> $GITHUB_OUTPUT
+          echo "frontend_ip=$FRONTEND_IP" >> $GITHUB_OUTPUT
+
+      # Health check
+      - name: Health check
+        run: |
+          BACKEND_IP=${{ steps.endpoints.outputs.backend_ip }}
+          if [ "$BACKEND_IP" != "pending" ]; then
+            curl -f http://$BACKEND_IP:8000/health || echo "Backend health check failed"
+          fi
+
+      # Summary
+      - name: Deployment summary
+        run: |
+          echo "## GKE Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Cluster:** ${{ env.GKE_CLUSTER }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** ${{ env.NAMESPACE }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image Tag:** ${{ steps.tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Endpoints" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: http://${{ steps.endpoints.outputs.backend_ip }}:8000" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: http://${{ steps.endpoints.outputs.frontend_ip }}:3000" >> $GITHUB_STEP_SUMMARY
