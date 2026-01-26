@@ -6,8 +6,15 @@ A modern full-stack todo application with AI-powered chat, event-driven architec
 
 | Environment | Frontend | Backend API | Status |
 |-------------|----------|-------------|--------|
+| **Vercel (Production)** | https://frontend-sigma-seven-25.vercel.app | https://todo-api.20.81.84.247.nip.io | ✅ Active |
 | **AKS (Azure)** | http://20.237.113.196:3000 | http://20.62.210.3:8000 | ✅ Active |
 | **GKE (Google)** | *Configure after deployment* | *Configure after deployment* | 🔧 Ready |
+
+### Try It Now
+👉 **Live Demo**: https://frontend-sigma-seven-25.vercel.app
+- Sign up for a free account
+- Try the **AI Chat** interface at `/chat`
+- Or use the traditional **Todos** interface at `/todos`
 
 ## Features
 
@@ -129,6 +136,85 @@ See [Phase VI Deployment Guide](docs/phase-vi-deployment.md) for complete instru
 ```bash
 ./scripts/manual-deploy.sh gke latest
 ```
+
+## AI Chat Interface
+
+The application includes an AI-powered conversational interface for managing todos using natural language.
+
+### Accessing the Chat
+
+1. **Sign in** to your account
+2. Navigate to **AI Chat** from the navigation bar, or visit `/chat` directly
+3. Start chatting with the AI assistant to manage your todos
+
+### Chat Capabilities
+
+The AI assistant can help you with all todo operations:
+
+#### Create Todos
+```
+You: "Add a task to buy milk"
+AI: ✅ Created: 'Buy milk' (ID: 5, Status: active)
+
+You: "Create a todo to call dentist with description schedule appointment"
+AI: ✅ Created: 'Call dentist' with description 'schedule appointment' (ID: 6, Status: active)
+```
+
+#### List Todos
+```
+You: "What are my tasks?"
+AI: 📋 You have 3 tasks:
+    1. Buy milk (active)
+    2. Call dentist (active)
+    3. Review docs (completed)
+
+You: "Show me only active todos"
+AI: 📋 Active tasks:
+    1. Buy milk (ID: 5)
+    2. Call dentist (ID: 6)
+```
+
+#### Update Todos
+```
+You: "Mark task 5 as done"
+AI: ✅ Updated: 'Buy milk' is now completed
+
+You: "Update task 6 title to 'Call dentist tomorrow'"
+AI: ✅ Updated: Task 6 title changed to 'Call dentist tomorrow'
+```
+
+#### Delete Todos
+```
+You: "Delete task 5"
+AI: ✅ Deleted: 'Buy milk' has been removed
+
+You: "Remove the dentist task"
+AI: ✅ Deleted: 'Call dentist tomorrow' has been removed
+```
+
+### Smart Features
+
+#### Clarification
+The AI asks for clarification when your request is ambiguous:
+```
+You: "Delete it"
+AI: 🤔 Which task would you like to delete? Please specify the task name or ID.
+```
+
+#### Refusal
+The AI politely refuses unsupported operations:
+```
+You: "Schedule my tasks for next week"
+AI: ℹ️ I can only create, list, update, and delete todos. Scheduling is not supported.
+```
+
+### Navigation
+
+Switch between interfaces easily:
+- **📝 Todos**: Traditional list view with full CRUD operations
+- **💬 AI Chat**: Conversational interface for natural language task management
+
+Both interfaces are synced in real-time and use the same backend API.
 
 ## API Endpoints
 

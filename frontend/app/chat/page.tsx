@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChatWindow } from '@/components/chat';
+import { AppNavbar } from '@/components/AppNavbar';
 import { useTaskWebSocket } from '@/hooks/useTaskWebSocket';
 
 interface User {
@@ -26,7 +27,6 @@ export default function ChatPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -100,146 +100,11 @@ export default function ChatPage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
-      {/* Header */}
-      <header
-        style={{
-          backgroundColor: '#1877f2',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '960px',
-            margin: '0 auto',
-            padding: '0 16px',
-            height: '56px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#ffffff',
-              textDecoration: 'none',
-            }}
-          >
-            Todo App
-          </Link>
-
-          {/* Navigation */}
-          <nav
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <Link
-              href="/todos"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: '#ffffff',
-                borderRadius: '6px',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: '500',
-              }}
-            >
-              Todo List
-            </Link>
-            <Link
-              href="/chat"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#ffffff',
-                color: '#1877f2',
-                borderRadius: '6px',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: '600',
-              }}
-            >
-              AI Chat
-            </Link>
-          </nav>
-
-          {/* User Menu */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: '#ffffff',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: '#1877f2',
-              }}
-            >
-              {user?.name?.[0]?.toUpperCase() || 'U'}
-            </button>
-
-            {showUserMenu && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '8px',
-                  backgroundColor: '#ffffff',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
-                  minWidth: '200px',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid #e4e6eb',
-                  }}
-                >
-                  <p style={{ fontWeight: '600', color: '#1c1e21' }}>
-                    {user?.name || 'User'}
-                  </p>
-                  <p style={{ fontSize: '13px', color: '#65676b' }}>
-                    {user?.email}
-                  </p>
-                </div>
-                <button
-                  onClick={handleSignOut}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: '#1c1e21',
-                  }}
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Navigation Bar */}
+      <AppNavbar
+        user={user}
+        onSignOut={handleSignOut}
+      />
 
       {/* Main Content */}
       <main

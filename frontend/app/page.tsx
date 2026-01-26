@@ -70,9 +70,9 @@ export default function Home() {
             maxWidth: '600px',
             margin: '0 auto 32px'
           }}>
-            A clean, fast todo application to help you stay organized and productive.
+            A clean, fast todo application with AI-powered chat to help you stay organized and productive. Manage tasks naturally with conversational AI.
           </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/sign-up" style={{
               padding: '14px 32px',
               fontSize: '18px',
@@ -83,6 +83,17 @@ export default function Home() {
               backgroundColor: '#1877f2'
             }}>
               Get Started Free
+            </Link>
+            <Link href="/chat" style={{
+              padding: '14px 32px',
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#ffffff',
+              textDecoration: 'none',
+              borderRadius: '6px',
+              backgroundColor: '#42b72a'
+            }}>
+              💬 Try AI Chat
             </Link>
             <Link href="/todos" style={{
               padding: '14px 32px',
@@ -162,7 +173,35 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Feature 3 */}
+          {/* Feature 3 - AI Chat */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            padding: '24px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#d4f4dd',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '16px',
+              fontSize: '24px'
+            }}>
+              💬
+            </div>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+              AI Chat Assistant
+            </h3>
+            <p style={{ fontSize: '15px', color: '#606770' }}>
+              Manage todos with natural language. Just chat with our AI to create, update, and organize tasks.
+            </p>
+          </div>
+
+          {/* Feature 4 */}
           <div style={{
             backgroundColor: '#ffffff',
             borderRadius: '8px',
@@ -208,7 +247,7 @@ export default function Home() {
             gap: '12px',
             justifyContent: 'center'
           }}>
-            {['Next.js', 'FastAPI', 'PostgreSQL', 'TypeScript', 'Tailwind CSS'].map((tech) => (
+            {['Next.js', 'FastAPI', 'PostgreSQL', 'AI Chat', 'TypeScript'].map((tech) => (
               <span key={tech} style={{
                 padding: '8px 16px',
                 backgroundColor: '#f0f2f5',
@@ -248,7 +287,7 @@ export default function Home() {
           color: '#606770',
           fontSize: '14px'
         }}>
-          <p>Todo App - Phase II Full-Stack Application</p>
+          <p>Todo App - Full-Stack Application with AI Chat</p>
         </div>
       </footer>
     </div>
