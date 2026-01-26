@@ -50,7 +50,7 @@ export default function SignInPage() {
     return (
         <div style={{
             minHeight: '100vh',
-            backgroundColor: '#f0f2f5',
+            backgroundColor: '#f3f4f6',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -62,12 +62,12 @@ export default function SignInPage() {
                     <h1 style={{
                         fontSize: '42px',
                         fontWeight: 'bold',
-                        color: '#1877f2',
+                        color: '#3b82f6',
                         marginBottom: '10px'
                     }}>
                         Todo App
                     </h1>
-                    <p style={{ fontSize: '16px', color: '#606770' }}>
+                    <p style={{ fontSize: '16px', color: '#6b7280' }}>
                         Manage your tasks efficiently
                     </p>
                 </div>
@@ -82,12 +82,12 @@ export default function SignInPage() {
                     <form onSubmit={handleSubmit}>
                         {error && (
                             <div style={{
-                                backgroundColor: '#ffebe8',
-                                border: '1px solid #dd3c10',
+                                backgroundColor: '#fee2e2',
+                                border: '1px solid #ef4444',
                                 borderRadius: '4px',
                                 padding: '12px',
                                 marginBottom: '16px',
-                                color: '#dd3c10',
+                                color: '#ef4444',
                                 fontSize: '14px'
                             }}>
                                 {error}
@@ -104,12 +104,12 @@ export default function SignInPage() {
                                 width: '100%',
                                 padding: '14px 16px',
                                 fontSize: '17px',
-                                border: '1px solid #dddfe2',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '6px',
                                 marginBottom: '12px',
                                 outline: 'none',
                                 backgroundColor: '#fff',
-                                color: '#1c1e21'
+                                color: '#1f2937'
                             }}
                         />
 
@@ -123,12 +123,12 @@ export default function SignInPage() {
                                 width: '100%',
                                 padding: '14px 16px',
                                 fontSize: '17px',
-                                border: '1px solid #dddfe2',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '6px',
                                 marginBottom: '12px',
                                 outline: 'none',
                                 backgroundColor: '#fff',
-                                color: '#1c1e21'
+                                color: '#1f2937'
                             }}
                         />
 
@@ -140,7 +140,7 @@ export default function SignInPage() {
                                 padding: '14px 16px',
                                 fontSize: '20px',
                                 fontWeight: 'bold',
-                                backgroundColor: '#1877f2',
+                                backgroundColor: '#3b82f6',
                                 color: '#ffffff',
                                 border: 'none',
                                 borderRadius: '6px',
@@ -153,7 +153,7 @@ export default function SignInPage() {
 
                         <div style={{ textAlign: 'center', marginTop: '16px' }}>
                             <Link href="#" style={{
-                                color: '#1877f2',
+                                color: '#3b82f6',
                                 fontSize: '14px',
                                 textDecoration: 'none'
                             }}>
@@ -162,7 +162,7 @@ export default function SignInPage() {
                         </div>
 
                         <div style={{
-                            borderTop: '1px solid #dadde1',
+                            borderTop: '1px solid #e5e7eb',
                             marginTop: '20px',
                             paddingTop: '20px',
                             textAlign: 'center'
@@ -172,7 +172,7 @@ export default function SignInPage() {
                                 padding: '14px 24px',
                                 fontSize: '17px',
                                 fontWeight: 'bold',
-                                backgroundColor: '#42b72a',
+                                backgroundColor: '#10b981',
                                 color: '#ffffff',
                                 border: 'none',
                                 borderRadius: '6px',
@@ -188,7 +188,7 @@ export default function SignInPage() {
                     textAlign: 'center',
                     marginTop: '28px',
                     fontSize: '14px',
-                    color: '#737373'
+                    color: '#6b7280'
                 }}>
                     <p>Phase II - Todo Application</p>
                 </div>

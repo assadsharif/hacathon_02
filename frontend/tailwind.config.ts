@@ -10,8 +10,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#f0f2f5",
-        foreground: "#1c1e21",
+        // Productive Flow Theme
+        primary: {
+          DEFAULT: '#3b82f6',
+          hover: '#2563eb',
+        },
+        success: {
+          DEFAULT: '#10b981',
+          hover: '#059669',
+        },
+        accent: {
+          DEFAULT: '#8b5cf6',
+          hover: '#7c3aed',
+        },
+        neutral: {
+          DEFAULT: '#f3f4f6',
+          border: '#e5e7eb',
+        },
+        danger: {
+          DEFAULT: '#ef4444',
+          hover: '#dc2626',
+        },
+        text: {
+          primary: '#1f2937',
+          secondary: '#6b7280',
+        },
+        background: "#f3f4f6",
+        foreground: "#1f2937",
+      },
+      fontFamily: {
+        sans: ['DejaVu Sans', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
     },
   },

@@ -77,7 +77,7 @@ export default function ChatPage() {
       <div
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f0f2f5',
+          backgroundColor: '#f3f4f6',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -87,8 +87,8 @@ export default function ChatPage() {
           style={{
             width: '40px',
             height: '40px',
-            border: '4px solid #e7f3ff',
-            borderTopColor: '#1877f2',
+            border: '4px solid #dbeafe',
+            borderTopColor: '#3b82f6',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
           }}
@@ -99,7 +99,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
       {/* Navigation Bar */}
       <AppNavbar
         user={user}

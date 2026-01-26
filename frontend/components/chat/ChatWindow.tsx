@@ -189,8 +189,8 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px',
-          borderBottom: '1px solid #e4e6eb',
-          backgroundColor: '#f7f8fa',
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: '#f3f4f6',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -199,7 +199,7 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
               width: '40px',
               height: '40px',
               borderRadius: '50%',
-              backgroundColor: '#1877f2',
+              backgroundColor: '#8b5cf6',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -213,7 +213,7 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
               style={{
                 fontSize: '16px',
                 fontWeight: '600',
-                color: '#1c1e21',
+                color: '#1f2937',
                 margin: 0,
               }}
             >
@@ -222,7 +222,7 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
             <p
               style={{
                 fontSize: '13px',
-                color: '#65676b',
+                color: '#6b7280',
                 margin: 0,
               }}
             >
@@ -238,10 +238,11 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
             style={{
               padding: '8px 12px',
               borderRadius: '6px',
-              border: '1px solid #e4e6eb',
-              backgroundColor: showToolCalls ? '#e7f3ff' : 'transparent',
-              color: showToolCalls ? '#1877f2' : '#65676b',
+              border: '1px solid #e5e7eb',
+              backgroundColor: showToolCalls ? '#dbeafe' : 'transparent',
+              color: showToolCalls ? '#3b82f6' : '#6b7280',
               fontSize: '13px',
+              fontWeight: '600',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -259,10 +260,11 @@ export function ChatWindow({ token, onTodoChange }: ChatWindowProps) {
             style={{
               padding: '8px 12px',
               borderRadius: '6px',
-              border: '1px solid #e4e6eb',
+              border: '1px solid #e5e7eb',
               backgroundColor: 'transparent',
-              color: '#65676b',
+              color: '#6b7280',
               fontSize: '13px',
+              fontWeight: '600',
               cursor: 'pointer',
             }}
             title="Clear conversation"

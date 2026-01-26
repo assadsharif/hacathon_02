@@ -97,8 +97,8 @@ function Message({
           maxWidth: '80%',
           padding: '12px 16px',
           borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-          backgroundColor: isUser ? '#1877f2' : '#e4e6eb',
-          color: isUser ? '#ffffff' : '#1c1e21',
+          backgroundColor: isUser ? '#3b82f6' : '#8b5cf6',
+          color: '#ffffff',
           fontSize: '15px',
           lineHeight: '1.4',
           whiteSpace: 'pre-wrap',
@@ -118,7 +118,7 @@ function Message({
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#8a8d91',
+                backgroundColor: '#ffffff',
                 animation: 'pulse 1.4s ease-in-out infinite',
               }}
             />
@@ -127,7 +127,7 @@ function Message({
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#8a8d91',
+                backgroundColor: '#ffffff',
                 animation: 'pulse 1.4s ease-in-out 0.2s infinite',
               }}
             />
@@ -136,7 +136,7 @@ function Message({
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#8a8d91',
+                backgroundColor: '#ffffff',
                 animation: 'pulse 1.4s ease-in-out 0.4s infinite',
               }}
             />
@@ -168,7 +168,7 @@ function Message({
                 style={{
                   marginBottom: '8px',
                   borderRadius: '8px',
-                  border: '1px solid #e4e6eb',
+                  border: '1px solid #e5e7eb',
                   overflow: 'hidden',
                   fontSize: '13px',
                 }}
@@ -182,7 +182,7 @@ function Message({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    backgroundColor: '#f7f8fa',
+                    backgroundColor: '#f3f4f6',
                     border: 'none',
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -202,7 +202,7 @@ function Message({
                     style={{
                       fontFamily: 'monospace',
                       fontWeight: '600',
-                      color: '#1877f2',
+                      color: '#3b82f6',
                     }}
                   >
                     {tool.name}
@@ -214,9 +214,9 @@ function Message({
                         padding: '2px 8px',
                         borderRadius: '4px',
                         backgroundColor: tool.result.success
-                          ? '#e6f4ea'
-                          : '#fce8e6',
-                        color: tool.result.success ? '#1e8e3e' : '#d93025',
+                          ? '#d1fae5'
+                          : '#fee2e2',
+                        color: tool.result.success ? '#10b981' : '#ef4444',
                         fontSize: '11px',
                         fontWeight: '600',
                       }}
@@ -231,7 +231,7 @@ function Message({
                   <div
                     style={{
                       padding: '12px',
-                      borderTop: '1px solid #e4e6eb',
+                      borderTop: '1px solid #e5e7eb',
                       backgroundColor: '#ffffff',
                     }}
                   >
@@ -241,7 +241,7 @@ function Message({
                         style={{
                           fontSize: '11px',
                           fontWeight: '600',
-                          color: '#65676b',
+                          color: '#6b7280',
                           marginBottom: '4px',
                           textTransform: 'uppercase',
                         }}
@@ -253,7 +253,7 @@ function Message({
                           margin: 0,
                           padding: '8px',
                           borderRadius: '4px',
-                          backgroundColor: '#f7f8fa',
+                          backgroundColor: '#f3f4f6',
                           fontSize: '12px',
                           fontFamily: 'monospace',
                           overflow: 'auto',
@@ -271,7 +271,7 @@ function Message({
                           style={{
                             fontSize: '11px',
                             fontWeight: '600',
-                            color: '#65676b',
+                            color: '#6b7280',
                             marginBottom: '4px',
                             textTransform: 'uppercase',
                           }}
@@ -284,8 +284,8 @@ function Message({
                             padding: '8px',
                             borderRadius: '4px',
                             backgroundColor: tool.result.success
-                              ? '#e6f4ea'
-                              : '#fce8e6',
+                              ? '#d1fae5'
+                              : '#fee2e2',
                             fontSize: '12px',
                             fontFamily: 'monospace',
                             overflow: 'auto',
@@ -308,7 +308,7 @@ function Message({
       <div
         style={{
           fontSize: '11px',
-          color: '#8a8d91',
+          color: '#9ca3af',
           marginTop: '4px',
           paddingLeft: isUser ? '0' : '8px',
           paddingRight: isUser ? '8px' : '0',
@@ -354,14 +354,14 @@ export function MessageList({
           style={{
             textAlign: 'center',
             padding: '48px 16px',
-            color: '#65676b',
+            color: '#6b7280',
           }}
         >
           <div
             style={{
               width: '64px',
               height: '64px',
-              backgroundColor: '#e7f3ff',
+              backgroundColor: '#ede9fe',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -376,7 +376,7 @@ export function MessageList({
             style={{
               fontSize: '18px',
               fontWeight: '600',
-              color: '#1c1e21',
+              color: '#1f2937',
               marginBottom: '8px',
             }}
           >

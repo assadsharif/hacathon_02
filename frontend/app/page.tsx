@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
       {/* Header */}
       <header style={{
         backgroundColor: '#ffffff',
@@ -19,7 +19,7 @@ export default function Home() {
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1877f2' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#3b82f6' }}>
             Todo App
           </h1>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -27,10 +27,10 @@ export default function Home() {
               padding: '8px 16px',
               fontSize: '15px',
               fontWeight: '600',
-              color: '#1877f2',
+              color: '#3b82f6',
               textDecoration: 'none',
               borderRadius: '6px',
-              backgroundColor: '#e7f3ff'
+              backgroundColor: '#dbeafe'
             }}>
               Log In
             </Link>
@@ -41,7 +41,7 @@ export default function Home() {
               color: '#ffffff',
               textDecoration: 'none',
               borderRadius: '6px',
-              backgroundColor: '#42b72a'
+              backgroundColor: '#3b82f6'
             }}>
               Sign Up
             </Link>
@@ -55,17 +55,17 @@ export default function Home() {
           <h2 style={{
             fontSize: '48px',
             fontWeight: 'bold',
-            color: '#1c1e21',
+            color: '#1f2937',
             marginBottom: '16px',
             lineHeight: '1.2'
           }}>
             Manage your tasks
             <br />
-            <span style={{ color: '#1877f2' }}>simply and efficiently</span>
+            <span style={{ color: '#3b82f6' }}>simply and efficiently</span>
           </h2>
           <p style={{
             fontSize: '20px',
-            color: '#606770',
+            color: '#6b7280',
             marginBottom: '32px',
             maxWidth: '600px',
             margin: '0 auto 32px'
@@ -80,7 +80,8 @@ export default function Home() {
               color: '#ffffff',
               textDecoration: 'none',
               borderRadius: '6px',
-              backgroundColor: '#1877f2'
+              backgroundColor: '#3b82f6',
+              transition: 'background-color 0.2s'
             }}>
               Get Started Free
             </Link>
@@ -91,7 +92,8 @@ export default function Home() {
               color: '#ffffff',
               textDecoration: 'none',
               borderRadius: '6px',
-              backgroundColor: '#42b72a'
+              backgroundColor: '#8b5cf6',
+              transition: 'background-color 0.2s'
             }}>
               💬 Try AI Chat
             </Link>
@@ -99,11 +101,11 @@ export default function Home() {
               padding: '14px 32px',
               fontSize: '18px',
               fontWeight: '600',
-              color: '#1c1e21',
+              color: '#1f2937',
               textDecoration: 'none',
               borderRadius: '6px',
               backgroundColor: '#ffffff',
-              border: '1px solid #dddfe2'
+              border: '1px solid #e5e7eb'
             }}>
               View Todos
             </Link>
@@ -122,12 +124,13 @@ export default function Home() {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '24px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
             <div style={{
               width: '48px',
               height: '48px',
-              backgroundColor: '#e7f3ff',
+              backgroundColor: '#dbeafe',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -137,10 +140,10 @@ export default function Home() {
             }}>
               ➕
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
               Create Tasks
             </h3>
-            <p style={{ fontSize: '15px', color: '#606770' }}>
+            <p style={{ fontSize: '15px', color: '#6b7280' }}>
               Quickly add new tasks with titles and descriptions. Stay on top of what needs to be done.
             </p>
           </div>
@@ -150,12 +153,13 @@ export default function Home() {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '24px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
             <div style={{
               width: '48px',
               height: '48px',
-              backgroundColor: '#d4edda',
+              backgroundColor: '#d1fae5',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -165,10 +169,10 @@ export default function Home() {
             }}>
               ✓
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
               Mark Complete
             </h3>
-            <p style={{ fontSize: '15px', color: '#606770' }}>
+            <p style={{ fontSize: '15px', color: '#6b7280' }}>
               Check off tasks as you complete them. Track your progress throughout the day.
             </p>
           </div>
@@ -178,12 +182,13 @@ export default function Home() {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '24px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
             <div style={{
               width: '48px',
               height: '48px',
-              backgroundColor: '#d4f4dd',
+              backgroundColor: '#ede9fe',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -193,10 +198,10 @@ export default function Home() {
             }}>
               💬
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
               AI Chat Assistant
             </h3>
-            <p style={{ fontSize: '15px', color: '#606770' }}>
+            <p style={{ fontSize: '15px', color: '#6b7280' }}>
               Manage todos with natural language. Just chat with our AI to create, update, and organize tasks.
             </p>
           </div>
@@ -206,12 +211,13 @@ export default function Home() {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '24px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
             <div style={{
               width: '48px',
               height: '48px',
-              backgroundColor: '#f3e5f5',
+              backgroundColor: '#f3f4f6',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -221,10 +227,10 @@ export default function Home() {
             }}>
               🔍
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
               Filter & Search
             </h3>
-            <p style={{ fontSize: '15px', color: '#606770' }}>
+            <p style={{ fontSize: '15px', color: '#6b7280' }}>
               Find tasks quickly with search and filters. Focus on what matters most.
             </p>
           </div>
@@ -236,9 +242,10 @@ export default function Home() {
           borderRadius: '8px',
           padding: '32px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          textAlign: 'center'
+          textAlign: 'center',
+          border: '1px solid #e5e7eb'
         }}>
-          <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#1c1e21', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>
             Built with Modern Technology
           </h3>
           <div style={{
@@ -250,10 +257,11 @@ export default function Home() {
             {['Next.js', 'FastAPI', 'PostgreSQL', 'AI Chat', 'TypeScript'].map((tech) => (
               <span key={tech} style={{
                 padding: '8px 16px',
-                backgroundColor: '#f0f2f5',
+                backgroundColor: '#f3f4f6',
                 borderRadius: '20px',
                 fontSize: '14px',
-                color: '#606770'
+                color: '#6b7280',
+                fontWeight: '500'
               }}>
                 {tech}
               </span>
@@ -264,7 +272,7 @@ export default function Home() {
               href="http://localhost:8000/docs"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#1877f2', textDecoration: 'none', fontSize: '15px' }}
+              style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '15px', fontWeight: '600' }}
             >
               View API Documentation →
             </a>
@@ -275,7 +283,7 @@ export default function Home() {
       {/* Footer */}
       <footer style={{
         backgroundColor: '#ffffff',
-        borderTop: '1px solid #dddfe2',
+        borderTop: '1px solid #e5e7eb',
         padding: '24px 0',
         marginTop: '60px'
       }}>
@@ -284,7 +292,7 @@ export default function Home() {
           margin: '0 auto',
           padding: '0 16px',
           textAlign: 'center',
-          color: '#606770',
+          color: '#6b7280',
           fontSize: '14px'
         }}>
           <p>Todo App - Full-Stack Application with AI Chat</p>

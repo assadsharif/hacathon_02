@@ -51,7 +51,7 @@ export default function SignUpPage() {
     return (
         <div style={{
             minHeight: '100vh',
-            backgroundColor: '#f0f2f5',
+            backgroundColor: '#f3f4f6',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -63,7 +63,7 @@ export default function SignUpPage() {
                     <h1 style={{
                         fontSize: '42px',
                         fontWeight: 'bold',
-                        color: '#1877f2',
+                        color: '#3b82f6',
                         marginBottom: '10px'
                     }}>
                         Todo App
@@ -78,25 +78,25 @@ export default function SignUpPage() {
                     padding: '20px'
                 }}>
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                        <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1c1e21' }}>
+                        <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937' }}>
                             Create a new account
                         </h2>
-                        <p style={{ fontSize: '15px', color: '#606770', marginTop: '4px' }}>
+                        <p style={{ fontSize: '15px', color: '#6b7280', marginTop: '4px' }}>
                             It&apos;s quick and easy.
                         </p>
                     </div>
 
-                    <div style={{ borderTop: '1px solid #dadde1', margin: '16px 0' }}></div>
+                    <div style={{ borderTop: '1px solid #e5e7eb', margin: '16px 0' }}></div>
 
                     <form onSubmit={handleSubmit}>
                         {error && (
                             <div style={{
-                                backgroundColor: '#ffebe8',
-                                border: '1px solid #dd3c10',
+                                backgroundColor: '#fee2e2',
+                                border: '1px solid #ef4444',
                                 borderRadius: '4px',
                                 padding: '12px',
                                 marginBottom: '16px',
-                                color: '#dd3c10',
+                                color: '#ef4444',
                                 fontSize: '14px'
                             }}>
                                 {error}
@@ -113,12 +113,12 @@ export default function SignUpPage() {
                                 width: '100%',
                                 padding: '11px',
                                 fontSize: '15px',
-                                border: '1px solid #ccd0d5',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '5px',
                                 marginBottom: '12px',
                                 outline: 'none',
-                                backgroundColor: '#f5f6f7',
-                                color: '#1c1e21'
+                                backgroundColor: '#f3f4f6',
+                                color: '#1f2937'
                             }}
                         />
 
@@ -132,12 +132,12 @@ export default function SignUpPage() {
                                 width: '100%',
                                 padding: '11px',
                                 fontSize: '15px',
-                                border: '1px solid #ccd0d5',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '5px',
                                 marginBottom: '12px',
                                 outline: 'none',
-                                backgroundColor: '#f5f6f7',
-                                color: '#1c1e21'
+                                backgroundColor: '#f3f4f6',
+                                color: '#1f2937'
                             }}
                         />
 
@@ -152,16 +152,16 @@ export default function SignUpPage() {
                                 width: '100%',
                                 padding: '11px',
                                 fontSize: '15px',
-                                border: '1px solid #ccd0d5',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '5px',
                                 marginBottom: '16px',
                                 outline: 'none',
-                                backgroundColor: '#f5f6f7',
-                                color: '#1c1e21'
+                                backgroundColor: '#f3f4f6',
+                                color: '#1f2937'
                             }}
                         />
 
-                        <p style={{ fontSize: '11px', color: '#777', marginBottom: '16px' }}>
+                        <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '16px' }}>
                             By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
                         </p>
 
@@ -173,7 +173,7 @@ export default function SignUpPage() {
                                     padding: '10px 60px',
                                     fontSize: '18px',
                                     fontWeight: 'bold',
-                                    backgroundColor: '#00a400',
+                                    backgroundColor: '#10b981',
                                     color: '#ffffff',
                                     border: 'none',
                                     borderRadius: '6px',
@@ -187,7 +187,7 @@ export default function SignUpPage() {
 
                         <div style={{ textAlign: 'center', marginTop: '20px' }}>
                             <Link href="/sign-in" style={{
-                                color: '#1877f2',
+                                color: '#3b82f6',
                                 fontSize: '17px',
                                 textDecoration: 'none'
                             }}>

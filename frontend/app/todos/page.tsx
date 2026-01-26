@@ -118,7 +118,7 @@ export default function TodosPage() {
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundColor: '#f0f2f5',
+        backgroundColor: '#f3f4f6',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -126,8 +126,8 @@ export default function TodosPage() {
         <div style={{
           width: '40px',
           height: '40px',
-          border: '4px solid #e7f3ff',
-          borderTopColor: '#1877f2',
+          border: '4px solid #dbeafe',
+          borderTopColor: '#3b82f6',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite'
         }} />
@@ -148,7 +148,7 @@ export default function TodosPage() {
   const completedTodos = todos.filter(t => t.status === 'completed').length;
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
       {/* Navigation Bar */}
       <AppNavbar
         user={user}
@@ -170,7 +170,7 @@ export default function TodosPage() {
           href="/todos/new"
           style={{
             padding: '10px 20px',
-            backgroundColor: '#42b72a',
+            backgroundColor: '#3b82f6',
             color: '#ffffff',
             borderRadius: '6px',
             textDecoration: 'none',
@@ -196,34 +196,37 @@ export default function TodosPage() {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '20px',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#1877f2' }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>
               {todos.length}
             </p>
-            <p style={{ fontSize: '14px', color: '#65676b' }}>Total Tasks</p>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>Total Tasks</p>
           </div>
           <div style={{
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '20px',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#f5a623' }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>
               {activeTodos}
             </p>
-            <p style={{ fontSize: '14px', color: '#65676b' }}>Active</p>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>Active</p>
           </div>
           <div style={{
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             padding: '20px',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#42b72a' }}>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
               {completedTodos}
             </p>
-            <p style={{ fontSize: '14px', color: '#65676b' }}>Completed</p>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>Completed</p>
           </div>
         </div>
 
@@ -247,8 +250,8 @@ export default function TodosPage() {
                 cursor: 'pointer',
                 fontSize: '14px',
                 fontWeight: '600',
-                backgroundColor: filter === f ? '#1877f2' : 'transparent',
-                color: filter === f ? '#ffffff' : '#65676b',
+                backgroundColor: filter === f ? '#3b82f6' : 'transparent',
+                color: filter === f ? '#ffffff' : '#6b7280',
                 textTransform: 'capitalize',
                 transition: 'all 0.2s'
               }}
@@ -261,12 +264,12 @@ export default function TodosPage() {
         {/* Error */}
         {error && (
           <div style={{
-            backgroundColor: '#ffebe8',
-            border: '1px solid #dd3c10',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #ef4444',
             borderRadius: '8px',
             padding: '12px 16px',
             marginBottom: '24px',
-            color: '#dd3c10',
+            color: '#ef4444',
             fontSize: '14px'
           }}>
             {error}
@@ -279,13 +282,13 @@ export default function TodosPage() {
             <div style={{
               width: '40px',
               height: '40px',
-              border: '4px solid #e7f3ff',
-              borderTopColor: '#1877f2',
+              border: '4px solid #dbeafe',
+              borderTopColor: '#3b82f6',
               borderRadius: '50%',
               margin: '0 auto',
               animation: 'spin 1s linear infinite'
             }} />
-            <p style={{ marginTop: '16px', color: '#65676b' }}>Loading your todos...</p>
+            <p style={{ marginTop: '16px', color: '#6b7280' }}>Loading your todos...</p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}
@@ -302,7 +305,7 @@ export default function TodosPage() {
             <div style={{
               width: '80px',
               height: '80px',
-              backgroundColor: '#e7f3ff',
+              backgroundColor: '#dbeafe',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -312,10 +315,10 @@ export default function TodosPage() {
             }}>
               {searchQuery ? '🔍' : '📝'}
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1c1e21', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
               {searchQuery ? 'No results found' : 'No todos yet'}
             </h3>
-            <p style={{ color: '#65676b', marginBottom: '20px' }}>
+            <p style={{ color: '#6b7280', marginBottom: '20px' }}>
               {searchQuery
                 ? `No todos match "${searchQuery}"`
                 : filter === 'all'
@@ -329,7 +332,7 @@ export default function TodosPage() {
                 style={{
                   display: 'inline-block',
                   padding: '12px 24px',
-                  backgroundColor: '#1877f2',
+                  backgroundColor: '#3b82f6',
                   color: '#ffffff',
                   borderRadius: '6px',
                   textDecoration: 'none',
@@ -371,8 +374,8 @@ export default function TodosPage() {
                     width: '24px',
                     height: '24px',
                     borderRadius: '50%',
-                    border: todo.status === 'completed' ? 'none' : '2px solid #bec3c9',
-                    backgroundColor: todo.status === 'completed' ? '#42b72a' : 'transparent',
+                    border: todo.status === 'completed' ? 'none' : '2px solid #d1d5db',
+                    backgroundColor: todo.status === 'completed' ? '#10b981' : 'transparent',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -392,7 +395,7 @@ export default function TodosPage() {
                     <h3 style={{
                       fontSize: '16px',
                       fontWeight: '600',
-                      color: todo.status === 'completed' ? '#bec3c9' : '#1c1e21',
+                      color: todo.status === 'completed' ? '#d1d5db' : '#1f2937',
                       textDecoration: todo.status === 'completed' ? 'line-through' : 'none',
                       marginBottom: '4px'
                     }}>
@@ -402,7 +405,7 @@ export default function TodosPage() {
                   {todo.description && (
                     <p style={{
                       fontSize: '14px',
-                      color: todo.status === 'completed' ? '#bec3c9' : '#65676b',
+                      color: todo.status === 'completed' ? '#d1d5db' : '#6b7280',
                       marginBottom: '8px',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -411,7 +414,7 @@ export default function TodosPage() {
                       {todo.description}
                     </p>
                   )}
-                  <p style={{ fontSize: '12px', color: '#8a8d91' }}>
+                  <p style={{ fontSize: '12px', color: '#9ca3af' }}>
                     {new Date(todo.created_at).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -427,10 +430,11 @@ export default function TodosPage() {
                     style={{
                       padding: '8px',
                       borderRadius: '6px',
-                      backgroundColor: '#e7f3ff',
-                      color: '#1877f2',
+                      backgroundColor: '#dbeafe',
+                      color: '#3b82f6',
                       textDecoration: 'none',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      fontWeight: '600'
                     }}
                   >
                     Edit
@@ -440,11 +444,12 @@ export default function TodosPage() {
                     style={{
                       padding: '8px 12px',
                       borderRadius: '6px',
-                      backgroundColor: '#ffebe8',
-                      color: '#dd3c10',
+                      backgroundColor: '#fee2e2',
+                      color: '#ef4444',
                       border: 'none',
                       cursor: 'pointer',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      fontWeight: '600'
                     }}
                   >
                     Delete

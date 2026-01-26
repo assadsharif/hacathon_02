@@ -66,7 +66,7 @@ export function ChatInput({
         alignItems: 'flex-end',
         gap: '12px',
         padding: '16px',
-        borderTop: '1px solid #e4e6eb',
+        borderTop: '1px solid #e5e7eb',
         backgroundColor: '#ffffff',
       }}
     >
@@ -82,8 +82,8 @@ export function ChatInput({
           flex: 1,
           padding: '12px 16px',
           borderRadius: '20px',
-          border: '1px solid #e4e6eb',
-          backgroundColor: disabled ? '#f0f2f5' : '#f0f2f5',
+          border: '1px solid #e5e7eb',
+          backgroundColor: disabled ? '#f3f4f6' : '#f3f4f6',
           fontSize: '15px',
           lineHeight: '1.4',
           resize: 'none',
@@ -91,7 +91,7 @@ export function ChatInput({
           fontFamily: 'inherit',
           minHeight: '44px',
           maxHeight: '150px',
-          color: disabled ? '#8a8d91' : '#1c1e21',
+          color: disabled ? '#9ca3af' : '#1f2937',
         }}
       />
       <button
@@ -102,8 +102,8 @@ export function ChatInput({
           borderRadius: '20px',
           border: 'none',
           backgroundColor:
-            disabled || !message.trim() ? '#e4e6eb' : '#1877f2',
-          color: disabled || !message.trim() ? '#8a8d91' : '#ffffff',
+            disabled || !message.trim() ? '#e5e7eb' : '#8b5cf6',
+          color: disabled || !message.trim() ? '#9ca3af' : '#ffffff',
           fontSize: '15px',
           fontWeight: '600',
           cursor: disabled || !message.trim() ? 'not-allowed' : 'pointer',
