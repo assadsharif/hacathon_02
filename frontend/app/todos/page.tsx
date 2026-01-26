@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createAuthenticatedApi, Todo } from '@/lib/api';
-import { useTaskWebSocket } from '@/hooks/useTaskWebSocket';
+// import { useTaskWebSocket } from '@/hooks/useTaskWebSocket'; // Temporarily disabled - WebSocket endpoint not deployed
 
 interface User {
   id: string;
@@ -66,21 +66,22 @@ export default function TodosPage() {
   }, [loadTodos]);
 
   // [Task]: T054 - WebSocket real-time sync
-  const { isConnected } = useTaskWebSocket(token, {
-    onTaskCreated: () => loadTodos(),
-    onTaskUpdated: () => loadTodos(),
-    onTaskCompleted: () => loadTodos(),
-    onTaskDeleted: () => loadTodos(),
-    onReminderTriggered: (data) => {
-      // Show notification for reminder
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Task Reminder', {
-          body: data.title || 'You have a task due!',
-          icon: '/favicon.ico'
-        });
-      }
-    }
-  });
+  // Temporarily disabled - WebSocket endpoint not deployed on backend
+  // const { isConnected } = useTaskWebSocket(token, {
+  //   onTaskCreated: () => loadTodos(),
+  //   onTaskUpdated: () => loadTodos(),
+  //   onTaskCompleted: () => loadTodos(),
+  //   onTaskDeleted: () => loadTodos(),
+  //   onReminderTriggered: (data) => {
+  //     // Show notification for reminder
+  //     if ('Notification' in window && Notification.permission === 'granted') {
+  //       new Notification('Task Reminder', {
+  //         body: data.title || 'You have a task due!',
+  //         icon: '/favicon.ico'
+  //       });
+  //     }
+  //   }
+  // });
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
